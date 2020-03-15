@@ -99,7 +99,6 @@ public abstract class Entity : KinematicBody2D{
             float lerpWeight = knockbackDeceleration * delta;
             knockbackVelocity.x = Mathf.Lerp(knockbackVelocity.x, 0.0f, lerpWeight);
             knockbackVelocity.y = Mathf.Lerp(knockbackVelocity.y, 0.0f, lerpWeight);
-            if (knockbackVelocity.x > velocity.x) sprite.FlipH = knockbackVelocity.x < 0;
             Vector2 motion = knockbackVelocity * delta;
             KinematicCollision2D result = MoveAndCollide(motion);
             if (IsInstanceValid(result)) MoveAndCollide(result.Normal.Slide(motion));
