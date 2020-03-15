@@ -58,6 +58,20 @@ public class Enemy : Entity{
         AddToGroup("Enemies");
     }
 
+    public override void _Ready(){
+        base._Ready();
+        globals.Connect("EnemySfxDbChanged", this, "_OnEnemySfxDbChanged");
+        globals.Connect("EnemySfxPaused", this, "_OnEnemySfxPaused");
+    }
+
+    protected virtual void _OnEnemySfxDbChanged(float value){
+        
+    }
+
+    protected virtual void _OnEnemySfxPaused(bool paused){
+        
+    }
+
     public override void Damage(float damage, Vector2 knockback = default(Vector2)){
         if (curHealth == 0) return;
         base.Damage(damage, knockback);

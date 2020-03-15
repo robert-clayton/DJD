@@ -59,7 +59,19 @@ public class Golem : Boss{
 
     public override void _Ready(){
         base._Ready();
+        findTargetSfx.VolumeDb = globals.EnemySfxDb;
+        findTargetSfx.StreamPaused = globals.EnemySfxDb == globals.minDb;
         StartNextLurch();
+    }
+
+    protected override void _OnEnemySfxDbChanged(float value){
+        base._OnEnemySfxDbChanged(value);
+        findTargetSfx.VolumeDb = value;
+    }
+
+    protected override void _OnEnemySfxPaused(bool paused){
+        base._OnEnemySfxPaused(paused);
+        findTargetSfx.StreamPaused = paused;
     }
 
     public override void _PhysicsProcess(float delta){

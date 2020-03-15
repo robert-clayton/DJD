@@ -7,6 +7,8 @@ public class Game : Node2D{
     private Player player;
     List<List<(Type, int)>> waveDefinitions = new List<List<(Type, int)>>();
     private int currentWave = 0;
+    private AudioStreamPlayer bgm;
+    private Globals globals;
 
     public Game(){
         var waveOne = new List<(Type, int)>();
@@ -31,16 +33,29 @@ public class Game : Node2D{
         var waveSix = new List<(Type, int)>();
         waveSix.Add((typeof(Golem), 1));
 
-        waveDefinitions.Add(waveOne);
-        waveDefinitions.Add(waveTwo);
-        waveDefinitions.Add(waveThree);
-        waveDefinitions.Add(waveFour);
-        waveDefinitions.Add(waveFive);
+        // waveDefinitions.Add(waveOne);
+        // waveDefinitions.Add(waveTwo);
+        // waveDefinitions.Add(waveThree);
+        // waveDefinitions.Add(waveFour);
+        // waveDefinitions.Add(waveFive);
         waveDefinitions.Add(waveSix);
     }
 
     public override void _Ready(){
+        globals = GetTree().Root.GetNode("Globals") as Globals;
         floor = GetNode<Floor>("Floor");
+        bgm = GetNode<AudioStreamPlayer>("BGM");
+
+        globals.Connect("MusicDbChanged", this, "_OnMusicDbChanged");
+        globals.Connect("MusicPaused", this, "_OnMusicPaused");
+    }
+
+    public void _OnMusicDbChanged(float value){
+        bgm.VolumeDb = value;
+    }
+
+    public void _OnMusicPaused(bool enabled){
+        bgm.StreamPaused = enabled;
     }
 
     public void Reset(){

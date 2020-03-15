@@ -19,6 +19,10 @@ config/name="Dan John Deer the Dunjeoneers"
 run/main_scene="res://Game.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Globals="*res://Globals.cs"
+
 [display]
 
 window/size/width=320

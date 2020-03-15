@@ -70,6 +70,7 @@
     <Compile Include="entities\player\AbilityManager.cs" />
     <Compile Include="floor\Floor.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="Globals.cs" />
     <Compile Include="GUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

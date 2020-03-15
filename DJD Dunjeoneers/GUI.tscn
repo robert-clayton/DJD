@@ -54,11 +54,17 @@ margin_bottom = 32.0
 texture = ExtResource( 2 )
 stretch_mode = 4
 
-[node name="Play" type="TextureButton" parent="."]
-margin_left = 20.0
-margin_top = 64.0
-margin_right = 300.0
-margin_bottom = 80.0
+[node name="Main Menu" type="VBoxContainer" parent="Title Screen"]
+margin_top = 36.0
+margin_right = 280.0
+margin_bottom = 160.0
+size_flags_vertical = 3
+alignment = 1
+
+[node name="Play" type="TextureButton" parent="Title Screen/Main Menu"]
+margin_right = 280.0
+margin_bottom = 38.0
+size_flags_vertical = 3
 texture_normal = ExtResource( 3 )
 texture_hover = ExtResource( 4 )
 expand = true
@@ -67,12 +73,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Menu" type="TextureButton" parent="."]
-visible = false
-margin_left = 20.0
-margin_top = 88.0
-margin_right = 300.0
-margin_bottom = 104.0
+[node name="Menu" type="TextureButton" parent="Title Screen/Main Menu"]
+margin_top = 42.0
+margin_right = 280.0
+margin_bottom = 80.0
+size_flags_vertical = 3
 texture_normal = ExtResource( 5 )
 texture_hover = ExtResource( 7 )
 expand = true
@@ -81,11 +86,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Exit" type="TextureButton" parent="."]
-margin_left = 20.0
-margin_top = 112.0
-margin_right = 300.0
-margin_bottom = 128.0
+[node name="Exit" type="TextureButton" parent="Title Screen/Main Menu"]
+margin_top = 84.0
+margin_right = 280.0
+margin_bottom = 124.0
+size_flags_vertical = 3
 texture_normal = ExtResource( 8 )
 texture_hover = ExtResource( 6 )
 expand = true
@@ -93,3 +98,88 @@ stretch_mode = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Options Menu" type="VBoxContainer" parent="Title Screen"]
+visible = false
+margin_top = 100.0
+margin_right = 280.0
+margin_bottom = 160.0
+size_flags_vertical = 3
+alignment = 1
+
+[node name="Music" type="HBoxContainer" parent="Title Screen/Options Menu"]
+margin_right = 280.0
+margin_bottom = 17.0
+size_flags_vertical = 3
+alignment = 1
+
+[node name="Title" type="TextureButton" parent="Title Screen/Options Menu/Music"]
+margin_right = 138.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 3 )
+expand = true
+stretch_mode = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Slider" type="HSlider" parent="Title Screen/Options Menu/Music"]
+margin_left = 142.0
+margin_right = 280.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Player SFX" type="HBoxContainer" parent="Title Screen/Options Menu"]
+margin_top = 21.0
+margin_right = 280.0
+margin_bottom = 38.0
+size_flags_vertical = 3
+alignment = 1
+
+[node name="Title" type="TextureButton" parent="Title Screen/Options Menu/Player SFX"]
+margin_right = 138.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 3 )
+expand = true
+stretch_mode = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Slider" type="HSlider" parent="Title Screen/Options Menu/Player SFX"]
+margin_left = 142.0
+margin_right = 280.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Enemy SFX" type="HBoxContainer" parent="Title Screen/Options Menu"]
+margin_top = 42.0
+margin_right = 280.0
+margin_bottom = 60.0
+size_flags_vertical = 3
+alignment = 1
+
+[node name="Title" type="TextureButton" parent="Title Screen/Options Menu/Enemy SFX"]
+margin_right = 138.0
+margin_bottom = 18.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 3 )
+expand = true
+stretch_mode = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Slider" type="HSlider" parent="Title Screen/Options Menu/Enemy SFX"]
+margin_left = 142.0
+margin_right = 280.0
+margin_bottom = 18.0
+size_flags_horizontal = 3
+size_flags_vertical = 3

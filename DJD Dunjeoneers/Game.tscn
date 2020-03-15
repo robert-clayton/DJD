@@ -27,15 +27,15 @@ script = ExtResource( 5 )
 [node name="Mouse" type="Node2D" parent="."]
 script = ExtResource( 4 )
 
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color( 0.768627, 0.768627, 0.768627, 1 )
+
+[node name="BGM" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 1 )
+pitch_scale = 0.8
+autoplay = true
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 follow_viewport_enable = true
 
 [node name="GUI" parent="CanvasLayer" instance=ExtResource( 3 )]
-
-[node name="CanvasModulate" type="CanvasModulate" parent="."]
-color = Color( 0.768627, 0.768627, 0.768627, 1 )
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 1 )
-pitch_scale = 0.8
-autoplay = true

@@ -25,6 +25,7 @@ public abstract class Entity : KinematicBody2D{
     protected Random rng = new Random();
     protected CollisionShape2D moveCollider = new CollisionShape2D();
     protected TextureProgress healthBar = new TextureProgress();
+    protected Globals globals;
 
     public Entity(int size = 8){
         deathTween.InterpolateProperty(this, "modulate", new Color(1f, 1f, 1f, 1f), new Color(1f, 1f, 1f, 0f), 1);
@@ -84,6 +85,7 @@ public abstract class Entity : KinematicBody2D{
     public override void _Ready(){
         healthBar.MaxValue = maxHealth;
         healthBar.Value = curHealth;
+        globals = GetTree().Root.GetNode("Globals") as Globals;
     }
 
     public override void _Process(float delta){
