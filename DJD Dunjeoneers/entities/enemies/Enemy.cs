@@ -59,6 +59,7 @@ public class Enemy : Entity{
     }
 
     public override void Damage(float damage, Vector2 knockback = default(Vector2)){
+        if (curHealth == 0) return;
         base.Damage(damage, knockback);
         GetParent().GetNode("Game").GetNode<Camera>("Camera").ShakeFromDamage(2f);
 

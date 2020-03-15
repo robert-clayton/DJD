@@ -104,7 +104,7 @@ public class Game : Node2D{
             
             Vector2 pos = new Vector2();
 
-            foreach (System.Collections.Generic.KeyValuePair<object, object> entry in currentLine){
+            foreach (var entry in currentLine){
                 string key = entry.Key.ToString();
                 if (key == "PosX"){
                     pos.x = (float)entry.Value;

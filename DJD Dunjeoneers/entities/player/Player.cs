@@ -106,8 +106,8 @@ public class Player : Entity{
     }
 
     public override void Damage(float damage, Vector2 knockback = default(Vector2)){
+        if (curHealth == 0) return;
         base.Damage(damage, knockback);
-
         float healthPercent = curHealth / maxHealth;        
         Vector2 newScale = baseLightScale * (float)(healthPercent * healthPercent * (3f - 2f * healthPercent) * .7 + .3);
         lightTween.Stop(light, "scale");

@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://entities/enemies/Enemy.cs" type="Script" id=1]
 [ext_resource path="res://entities/enemies/bosses/golem/Golem.tres" type="SpriteFrames" id=2]
 [ext_resource path="res://assets/sprites/shadow.png" type="Texture" id=3]
+[ext_resource path="res://entities/enemies/bosses/golem/overload_vent.tres" type="Material" id=4]
 [ext_resource path="res://assets/gradients/GreenGradient_12.tres" type="Texture" id=5]
 [ext_resource path="res://assets/gradients/RedGradient_12.tres" type="Texture" id=6]
 
@@ -15,27 +16,6 @@ extents = Vector2( 4, 4 )
 [sub_resource type="CircleShape2D" id=3]
 radius = 34.0
 
-[sub_resource type="Curve" id=4]
-_data = [ Vector2( 0, 0.0727272 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 0.0, 0.0, 0, 0 ]
-
-[sub_resource type="CurveTexture" id=5]
-curve = SubResource( 4 )
-
-[sub_resource type="ParticlesMaterial" id=6]
-emission_shape = 1
-emission_sphere_radius = 24.0
-flag_disable_z = true
-gravity = Vector3( 0, 0, 0 )
-initial_velocity = 100.0
-initial_velocity_random = 0.42
-orbit_velocity = 0.0
-orbit_velocity_random = 0.0
-damping = 20.0
-scale = 0.9
-scale_random = 1.0
-scale_curve = SubResource( 5 )
-color = Color( 0.858824, 0.980392, 0, 1 )
-
 [node name="Enemy" type="KinematicBody2D"]
 collision_layer = 4
 collision_mask = 2
@@ -47,7 +27,6 @@ position = Vector2( 1, 8 )
 texture = ExtResource( 3 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-visible = false
 frames = ExtResource( 2 )
 frame = 2
 
@@ -75,9 +54,15 @@ collision_layer = 0
 visible = false
 shape = SubResource( 3 )
 
-[node name="Particles2D" type="Particles2D" parent="."]
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="Particles2D" type="Particles2D" parent="Area2D"]
 amount = 500
-process_material = SubResource( 6 )
+speed_scale = 1.2
+process_material = ExtResource( 4 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Area2D"]
+polygon = PoolVector2Array( -10, -3, 75, -80, 110, -45, 120, 0, 110, 45, 75, 80, -10, 3 )
 
 [node name="TextureProgress" type="TextureProgress" parent="."]
 visible = false
