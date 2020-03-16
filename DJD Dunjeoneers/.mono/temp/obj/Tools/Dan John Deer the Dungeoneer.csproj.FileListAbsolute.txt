@@ -1,6 +1,0 @@
-Z:\gamedev\DJD the Dungeoneer\.mono\temp\obj\Tools\Dan John Deer the Dungeoneer.csprojAssemblyReference.cache
-Z:\gamedev\DJD the Dungeoneer\.mono\temp\obj\Tools\Dan John Deer the Dungeoneer.csproj.CoreCompileInputs.cache
-Z:\gamedev\DJD the Dungeoneer\.mono\temp\bin\Tools\Dan John Deer the Dungeoneer.dll
-Z:\gamedev\DJD the Dungeoneer\.mono\temp\bin\Tools\Dan John Deer the Dungeoneer.pdb
-Z:\gamedev\DJD the Dungeoneer\.mono\temp\obj\Tools\Dan John Deer the Dungeoneer.dll
-Z:\gamedev\DJD the Dungeoneer\.mono\temp\obj\Tools\Dan John Deer the Dungeoneer.pdb
