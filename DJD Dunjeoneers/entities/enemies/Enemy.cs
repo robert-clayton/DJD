@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class Enemy : Entity{
+public abstract class Enemy : Entity{
     public enum EEnemyState{
         STATE_IDLE,
         STATE_MOVING,
@@ -12,14 +12,15 @@ public class Enemy : Entity{
 
     public Vector2 moveAreaStart;
     public Vector2 moveAreaEnd;
-    protected Vector2 moveTargetNone = new Vector2(-100000, -10000);
-    protected Vector2 moveTarget = new Vector2(-100000, -10000);
-    [Export] public EEnemyState state = EEnemyState.STATE_IDLE;
-    protected Player player;
-    protected Area2D hurtArea = new Area2D();
-    protected float touchDamage = 25f;
+    protected Vector2 _moveTargetNone = new Vector2(-100000, -10000);
+    protected Vector2 _moveTarget = new Vector2(-100000, -10000);
+    [Export] public EEnemyState _state = EEnemyState.STATE_IDLE;
+    protected Player _player;
+    protected Area2D _hurtArea = new Area2D();
+    protected Area2D _alertArea = new Area2D();
+    protected float _touchDamage = 25f;
 
-    public Enemy(){}
+    private Enemy() : base(){}
 
     public Enemy(Vector2 _position, Vector2 _moveAreaStart, Vector2 _moveAreaEnd, int size = 8) : base(size){
         SetCollisionMaskBit(1, true);
@@ -31,30 +32,30 @@ public class Enemy : Entity{
         
         var hurtCollider = new CollisionShape2D();
         var hurtBoxShape = new RectangleShape2D();
-        hurtArea.SetCollisionLayerBit(0, false);
-        hurtArea.SetCollisionLayerBit(2, true);
-        hurtArea.SetCollisionMaskBit(19, true);
-        hurtArea.SetCollisionMaskBit(0, false);
-        hurtArea.Name = "HurtBox";
+        _hurtArea.SetCollisionLayerBit(0, false);
+        _hurtArea.SetCollisionLayerBit(2, true);
+        _hurtArea.SetCollisionMaskBit(19, true);
+        _hurtArea.SetCollisionMaskBit(0, false);
+        _hurtArea.Name = "HurtBox";
         hurtBoxShape.Extents = new Vector2(size/2, size/2);
         hurtCollider.Shape = hurtBoxShape;
-        hurtArea.AddChild(hurtCollider);
-        AddChild(hurtArea);
+        _hurtArea.AddChild(hurtCollider);
+        AddChild(_hurtArea);
 
-        var alertArea = new Area2D();
+        
         var alertCollider = new CollisionShape2D();
         var alertBoxShape = new CircleShape2D();
-        alertArea.Name = "AlertCircle";
-        alertArea.SetCollisionMaskBit(19, true);
-        alertArea.SetCollisionMaskBit(0, false);
-        alertArea.CollisionLayer = 0;
+        _alertArea.Name = "AlertCircle";
+        _alertArea.SetCollisionMaskBit(19, true);
+        _alertArea.SetCollisionMaskBit(0, false);
+        _alertArea.CollisionLayer = 0;
         alertBoxShape.Radius = 35;
         alertCollider.Shape = alertBoxShape;
-        alertArea.AddChild(alertCollider);
-        AddChild(alertArea);
+        _alertArea.AddChild(alertCollider);
+        AddChild(_alertArea);
 
-        alertArea.Connect("area_entered", this, "_OnPlayerEnter");
-        hurtArea.Connect("area_entered", this, "_OnPlayerTouch");
+        _alertArea.Connect("area_entered", this, "_OnPlayerEnter");
+        _hurtArea.Connect("area_entered", this, "_OnPlayerTouch");
         AddToGroup("Enemies");
     }
 
@@ -64,13 +65,9 @@ public class Enemy : Entity{
         globals.Connect("EnemySfxPaused", this, "_OnEnemySfxPaused");
     }
 
-    protected virtual void _OnEnemySfxDbChanged(float value){
-        
-    }
+    protected virtual void _OnEnemySfxDbChanged(float value){}
 
-    protected virtual void _OnEnemySfxPaused(bool paused){
-        
-    }
+    protected virtual void _OnEnemySfxPaused(bool paused){}
 
     public override void Damage(float damage, Vector2 knockback = default(Vector2)){
         if (curHealth == 0) return;
@@ -78,8 +75,8 @@ public class Enemy : Entity{
         GetParent().GetNode("Game").GetNode<Camera>("Camera").ShakeFromDamage(2f);
 
         if (GetTree().GetNodesInGroup("Players").Count > 0){
-            player = GetTree().GetNodesInGroup("Players")[0] as Player;
-            moveTarget = player.Position;
+            _player = GetTree().GetNodesInGroup("Players")[0] as Player;
+            _moveTarget = _player.Position;
             ChangeState(EEnemyState.STATE_ALERTED);
         }
     }
@@ -88,20 +85,20 @@ public class Enemy : Entity{
         base.PrepareDeath();
         ChangeState(EEnemyState.STATE_DYING);
         RemoveFromGroup("Enemies");
-        GetNode<Area2D>("HurtBox").QueueFree();
-        GetNode<Area2D>("AlertCircle").QueueFree();
+        _hurtArea.QueueFree();
+        _alertArea.QueueFree();
     }
 
     public void _OnPlayerEnter(Area2D playerArea){
-        player = playerArea.GetParent<Player>();
-        moveTarget = player.Position;
+        _player = playerArea.GetParent<Player>();
+        _moveTarget = _player.Position;
         ChangeState(EEnemyState.STATE_ALERTED);
     }
 
     public void _OnPlayerTouch(Area2D area){
         if (area.GetParent() is Entity){
             Entity sourceTouch = area.GetParent() as Entity;
-            sourceTouch.Damage(touchDamage, hurtArea.GlobalPosition.DirectionTo(area.GlobalPosition)  * 100f);
+            sourceTouch.Damage(_touchDamage, _hurtArea.GlobalPosition.DirectionTo(area.GlobalPosition)  * 100f);
         }
     }
 
@@ -116,38 +113,36 @@ public class Enemy : Entity{
         base._Process(delta);
         if (curHealth < 0)
             PrepareDeath();
-        else if (moveTarget == moveTargetNone){
-            moveTarget = RandomPointInMovableArea();
+        else if (_moveTarget == _moveTargetNone){
+            _moveTarget = RandomPointInMovableArea();
             ChangeState(EEnemyState.STATE_MOVING);
-        } else if (state == EEnemyState.STATE_ALERTED){
-            if (IsInstanceValid(player))
-                moveTarget = player.Position;
-            else
-                player = null;
+        } else if (_state == EEnemyState.STATE_ALERTED){
+            if (IsInstanceValid(_player)) _moveTarget = _player.Position;
+            else _player = null;
         }
     }
 
     public override void _PhysicsProcess(float delta){
         base._PhysicsProcess(delta);
-        if (state == EEnemyState.STATE_IDLE || state == EEnemyState.STATE_STUNNED || state == EEnemyState.STATE_DYING) return;
-        if (moveTarget != moveTargetNone){
-            velocity = (velocity + Position.DirectionTo(moveTarget) * acceleration * delta).Clamped(maxVelocity * delta);
+        if (_state == EEnemyState.STATE_IDLE || _state == EEnemyState.STATE_STUNNED || _state == EEnemyState.STATE_DYING) return;
+        if (_moveTarget != _moveTargetNone){
+            velocity = (velocity + Position.DirectionTo(_moveTarget) * acceleration * delta).Clamped(maxVelocity * delta);
             sprite.FlipH = velocity.x < 0;
             var result = MoveAndCollide(velocity);
             if (IsInstanceValid(result)){
                 MoveAndCollide(result.Normal.Slide(velocity));
-                moveTarget = moveTargetNone;
+                _moveTarget = _moveTargetNone;
                 ChangeState(EEnemyState.STATE_IDLE);
             }
-            if (Position.DistanceTo(moveTarget) < 0.2f){
-                moveTarget = moveTargetNone;
+            if (Position.DistanceTo(_moveTarget) < 0.2f){
+                _moveTarget = _moveTargetNone;
                 ChangeState(EEnemyState.STATE_IDLE);
             }
         }
     }
 
     public void ChangeState(EEnemyState newState){
-        if (state == EEnemyState.STATE_DYING) return;
+        if (_state == EEnemyState.STATE_DYING) return;
         switch (newState){
             case EEnemyState.STATE_IDLE:
                 sprite.Play("default");
@@ -155,9 +150,8 @@ public class Enemy : Entity{
                 break;
             case EEnemyState.STATE_MOVING:
                 sprite.Play("default");
-                if (state == EEnemyState.STATE_ALERTED){
+                if (_state == EEnemyState.STATE_ALERTED)
                     sprite.SpeedScale = rng.Next(75, 100) / 100f * 0.5f;
-                }
                 break;
             case EEnemyState.STATE_STUNNED:
                 sprite.Play("default");
@@ -173,6 +167,6 @@ public class Enemy : Entity{
                 sprite.Play("default");
                 break;
         }
-        state = newState;
+        _state = newState;
     }
 }

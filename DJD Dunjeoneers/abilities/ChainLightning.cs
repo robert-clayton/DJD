@@ -96,9 +96,6 @@ public class ChainLightning : AbilityBase
         // Update set to only have valid entities
         for (int k = sets.Count - 1; k >= 0; k--){
             if (!IsInstanceValid(sets[k].entity) || sets[k].timer.TimeLeft == 0f){
-                if (k == 0){
-                    GD.Print("Hey so base emitter should be gone.");
-                }
                 sets[k].chainEmitter.QueueFree();
                 sets[k].crackleEmitter.QueueFree();
                 sets[k].light.QueueFree();
@@ -109,7 +106,6 @@ public class ChainLightning : AbilityBase
 
         // loop through emitters and update values
         for (int idx = 0; idx < sets.Count; idx++){
-            if (!IsInstanceValid(sets[idx].entity)) GD.Print("!");
             var from = idx == 0? startingPosition : sets[idx-1].entity.Position;
             var to = sets[idx].entity.Position;
 

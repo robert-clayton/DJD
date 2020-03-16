@@ -4,3 +4,9 @@ Z:\gamedev\DJD the Dungeoneer\.mono\temp\obj\Debug\Dan John Deer the Dunjeoneers
 Z:\gamedev\DJD the Dungeoneer\.mono\temp\obj\Debug\Dan John Deer the Dunjeoneers.csproj.CoreCompileInputs.cache
 Z:\gamedev\DJD the Dungeoneer\.mono\temp\obj\Debug\Dan John Deer the Dunjeoneers.dll
 Z:\gamedev\DJD the Dungeoneer\.mono\temp\obj\Debug\Dan John Deer the Dunjeoneers.pdb
+Z:\gamedev\DJD\DJD Dunjeoneers\.mono\temp\bin\Debug\Dan John Deer the Dunjeoneers.dll
+Z:\gamedev\DJD\DJD Dunjeoneers\.mono\temp\bin\Debug\Dan John Deer the Dunjeoneers.pdb
+Z:\gamedev\DJD\DJD Dunjeoneers\.mono\temp\obj\Debug\Dan John Deer the Dunjeoneers.csprojAssemblyReference.cache
+Z:\gamedev\DJD\DJD Dunjeoneers\.mono\temp\obj\Debug\Dan John Deer the Dunjeoneers.csproj.CoreCompileInputs.cache
+Z:\gamedev\DJD\DJD Dunjeoneers\.mono\temp\obj\Debug\Dan John Deer the Dunjeoneers.dll
+Z:\gamedev\DJD\DJD Dunjeoneers\.mono\temp\obj\Debug\Dan John Deer the Dunjeoneers.pdb
