@@ -1,5 +1,6 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=12 format=2]
 
+[ext_resource path="res://assets/sprites/enemy_sfx_on.png" type="Texture" id=1]
 [ext_resource path="res://assets/sprites/title.png" type="Texture" id=2]
 [ext_resource path="res://assets/sprites/play.png" type="Texture" id=3]
 [ext_resource path="res://assets/sprites/play_on.png" type="Texture" id=4]
@@ -7,6 +8,8 @@
 [ext_resource path="res://assets/sprites/exit_on.png" type="Texture" id=6]
 [ext_resource path="res://assets/sprites/menu_on.png" type="Texture" id=7]
 [ext_resource path="res://assets/sprites/exit.png" type="Texture" id=8]
+[ext_resource path="res://assets/sprites/player_sfx_on.png" type="Texture" id=9]
+[ext_resource path="res://assets/sprites/music_on.png" type="Texture" id=10]
 
 [sub_resource type="CSharpScript" id=1]
 resource_name = "GUI"
@@ -57,13 +60,13 @@ stretch_mode = 4
 [node name="Main Menu" type="VBoxContainer" parent="Title Screen"]
 margin_top = 36.0
 margin_right = 280.0
-margin_bottom = 160.0
+margin_bottom = 140.0
 size_flags_vertical = 3
 alignment = 1
 
 [node name="Play" type="TextureButton" parent="Title Screen/Main Menu"]
 margin_right = 280.0
-margin_bottom = 38.0
+margin_bottom = 32.0
 size_flags_vertical = 3
 texture_normal = ExtResource( 3 )
 texture_hover = ExtResource( 4 )
@@ -74,9 +77,9 @@ __meta__ = {
 }
 
 [node name="Menu" type="TextureButton" parent="Title Screen/Main Menu"]
-margin_top = 42.0
+margin_top = 36.0
 margin_right = 280.0
-margin_bottom = 80.0
+margin_bottom = 68.0
 size_flags_vertical = 3
 texture_normal = ExtResource( 5 )
 texture_hover = ExtResource( 7 )
@@ -87,9 +90,9 @@ __meta__ = {
 }
 
 [node name="Exit" type="TextureButton" parent="Title Screen/Main Menu"]
-margin_top = 84.0
+margin_top = 72.0
 margin_right = 280.0
-margin_bottom = 124.0
+margin_bottom = 104.0
 size_flags_vertical = 3
 texture_normal = ExtResource( 8 )
 texture_hover = ExtResource( 6 )
@@ -101,24 +104,24 @@ __meta__ = {
 
 [node name="Options Menu" type="VBoxContainer" parent="Title Screen"]
 visible = false
-margin_top = 100.0
+margin_top = 84.0
 margin_right = 280.0
-margin_bottom = 160.0
+margin_bottom = 140.0
 size_flags_vertical = 3
 alignment = 1
 
 [node name="Music" type="HBoxContainer" parent="Title Screen/Options Menu"]
 margin_right = 280.0
-margin_bottom = 17.0
+margin_bottom = 16.0
 size_flags_vertical = 3
 alignment = 1
 
 [node name="Title" type="TextureButton" parent="Title Screen/Options Menu/Music"]
 margin_right = 138.0
-margin_bottom = 17.0
+margin_bottom = 16.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture_normal = ExtResource( 3 )
+texture_normal = ExtResource( 10 )
 expand = true
 stretch_mode = 3
 __meta__ = {
@@ -128,23 +131,23 @@ __meta__ = {
 [node name="Slider" type="HSlider" parent="Title Screen/Options Menu/Music"]
 margin_left = 142.0
 margin_right = 280.0
-margin_bottom = 17.0
+margin_bottom = 16.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Player SFX" type="HBoxContainer" parent="Title Screen/Options Menu"]
-margin_top = 21.0
+margin_top = 20.0
 margin_right = 280.0
-margin_bottom = 38.0
+margin_bottom = 36.0
 size_flags_vertical = 3
 alignment = 1
 
 [node name="Title" type="TextureButton" parent="Title Screen/Options Menu/Player SFX"]
 margin_right = 138.0
-margin_bottom = 17.0
+margin_bottom = 16.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture_normal = ExtResource( 3 )
+texture_normal = ExtResource( 9 )
 expand = true
 stretch_mode = 3
 __meta__ = {
@@ -154,23 +157,23 @@ __meta__ = {
 [node name="Slider" type="HSlider" parent="Title Screen/Options Menu/Player SFX"]
 margin_left = 142.0
 margin_right = 280.0
-margin_bottom = 17.0
+margin_bottom = 16.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Enemy SFX" type="HBoxContainer" parent="Title Screen/Options Menu"]
-margin_top = 42.0
+margin_top = 40.0
 margin_right = 280.0
-margin_bottom = 60.0
+margin_bottom = 56.0
 size_flags_vertical = 3
 alignment = 1
 
 [node name="Title" type="TextureButton" parent="Title Screen/Options Menu/Enemy SFX"]
 margin_right = 138.0
-margin_bottom = 18.0
+margin_bottom = 16.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture_normal = ExtResource( 3 )
+texture_normal = ExtResource( 1 )
 expand = true
 stretch_mode = 3
 __meta__ = {
@@ -180,6 +183,6 @@ __meta__ = {
 [node name="Slider" type="HSlider" parent="Title Screen/Options Menu/Enemy SFX"]
 margin_left = 142.0
 margin_right = 280.0
-margin_bottom = 18.0
+margin_bottom = 16.0
 size_flags_horizontal = 3
 size_flags_vertical = 3

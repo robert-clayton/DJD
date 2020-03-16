@@ -33,11 +33,11 @@ public class Game : Node2D{
         var waveSix = new List<(Type, int)>();
         waveSix.Add((typeof(Golem), 1));
 
-        // waveDefinitions.Add(waveOne);
-        // waveDefinitions.Add(waveTwo);
-        // waveDefinitions.Add(waveThree);
-        // waveDefinitions.Add(waveFour);
-        // waveDefinitions.Add(waveFive);
+        waveDefinitions.Add(waveOne);
+        waveDefinitions.Add(waveTwo);
+        waveDefinitions.Add(waveThree);
+        waveDefinitions.Add(waveFour);
+        waveDefinitions.Add(waveFive);
         waveDefinitions.Add(waveSix);
     }
 
