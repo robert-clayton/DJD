@@ -4,41 +4,43 @@ using System.Collections.Generic;
 
 public class Game : Node2D{
     private Floor floor;
-    private Player player;
-    List<List<(Type, int)>> waveDefinitions = new List<List<(Type, int)>>();
-    private int currentWave = 0;
+    private Player _player;
+    private List<List<(Type, int)>> _waveDefinitions = new List<List<(Type, int)>>();
+    private int _currentWave = 0;
+    private int _currentWaveGateValue = 0;
     private AudioStreamPlayer bgm;
     private Globals globals;
 
     public Game(){
         var waveOne = new List<(Type, int)>();
-        waveOne.Add((typeof(SlimeBasic), 5));
-
         var waveTwo = new List<(Type, int)>();
+        var waveThree = new List<(Type, int)>();
+        var waveFour = new List<(Type, int)>();
+        var waveFive = new List<(Type, int)>();
+        var waveSix = new List<(Type, int)>();
+
+        waveOne.Add((typeof(SlimeBasic), 5));
+        
         waveTwo.Add((typeof(SlimeBasic), 15));
         waveTwo.Add((typeof(SlimeFire), 3));
 
-        var waveThree = new List<(Type, int)>();
         waveThree.Add((typeof(SlimeBasic), 20));
         waveThree.Add((typeof(SlimeFire), 5));
-
-        var waveFour = new List<(Type, int)>();
+        
         waveFour.Add((typeof(SlimeBasic), 30));
         waveFour.Add((typeof(SlimeFire), 15));
-
-        var waveFive = new List<(Type, int)>();
+        
         waveFive.Add((typeof(SlimeBasic), 30));
         waveFive.Add((typeof(SlimeFire), 30));
-
-        var waveSix = new List<(Type, int)>();
+        
         waveSix.Add((typeof(Golem), 1));
 
-        waveDefinitions.Add(waveOne);
-        waveDefinitions.Add(waveTwo);
-        waveDefinitions.Add(waveThree);
-        waveDefinitions.Add(waveFour);
-        waveDefinitions.Add(waveFive);
-        waveDefinitions.Add(waveSix);
+        _waveDefinitions.Add(waveOne);
+        _waveDefinitions.Add(waveTwo);
+        _waveDefinitions.Add(waveThree);
+        _waveDefinitions.Add(waveFour);
+        _waveDefinitions.Add(waveFive);
+        _waveDefinitions.Add(waveSix);
     }
 
     public override void _Ready(){
@@ -46,33 +48,34 @@ public class Game : Node2D{
         floor = GetNode<Floor>("Floor");
         bgm = GetNode<AudioStreamPlayer>("BGM");
 
-        globals.Connect("MusicDbChanged", this, "_OnMusicDbChanged");
-        globals.Connect("MusicPaused", this, "_OnMusicPaused");
+        globals.Connect("MusicDbChanged", this, "OnMusicDbChanged");
+        globals.Connect("MusicPaused", this, "OnMusicPaused");
     }
 
-    public void _OnMusicDbChanged(float value){
+    private void OnMusicDbChanged(float value){
         bgm.VolumeDb = value;
     }
 
-    public void _OnMusicPaused(bool enabled){
+    private void OnMusicPaused(bool enabled){
         bgm.StreamPaused = enabled;
     }
 
     public void Reset(){
         foreach (Enemy enemy in GetTree().GetNodesInGroup("Enemies"))
             enemy.QueueFree();
-        currentWave = 0;
-        if (IsInstanceValid(player)) player.QueueFree();
-        player = new Player((floor.areaStart + floor.areaEnd)/2);
-        player.Connect("Dead", this, "Reset");
-        AddChild(player);
-        SpawnEnemies(waveDefinitions[currentWave]);
+        _currentWave = 0;
+        if (IsInstanceValid(_player)) _player.QueueFree();
+        _player = new Player();
+        _player.Position = (floor.areaStart + floor.areaEnd) / 2;
+        _player.Connect("Dead", this, "Reset");
+        AddChild(_player);
+        SpawnEnemies(_waveDefinitions[_currentWave]);
     }
 
     public override void _Process(float delta){
         if (GetTree().GetNodesInGroup("Enemies").Count == 0){
-            if (++currentWave < waveDefinitions.Count){
-                SpawnEnemies(waveDefinitions[currentWave]);
+            if (++_currentWave < _waveDefinitions.Count){
+                SpawnEnemies(_waveDefinitions[_currentWave]);
             }
         }
     }

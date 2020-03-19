@@ -12,43 +12,43 @@ public class Globals : Node{
 
     public Node CurrentScene { get; set; }
     public float minDb = -15f;
-    private float timeScale = 1f;
-    private float musicDb = 0f;
-    private float playerSfxDb = 0f;
-    private float enemySfxDb = 0f;
+    private float _timeScale = 1f;
+    private float _musicDb = 0f;
+    private float _playerSfxDb = 0f;
+    private float _enemySfxDb = 0f;
     
     public float TimeScale { 
-        get { return timeScale; }
+        get { return _timeScale; }
         set {
-            timeScale = value;
+            _timeScale = value;
             EmitSignal("TimeScaleChanged", value);
         }
     }
 
     public float MusicDb { 
-        get { return musicDb; }
+        get { return _musicDb; }
         set {
-            musicDb = value;
-            EmitSignal("MusicPaused", musicDb == minDb);
+            _musicDb = value;
+            EmitSignal("MusicPaused", _musicDb == minDb);
             
             EmitSignal("MusicDbChanged", value);
         }
     }
 
     public float PlayerSfxDb { 
-        get { return playerSfxDb; }
+        get { return _playerSfxDb; }
         set {
-            playerSfxDb = value;
-            EmitSignal("PlayerSfxPaused", playerSfxDb == minDb);
+            _playerSfxDb = value;
+            EmitSignal("PlayerSfxPaused", _playerSfxDb == minDb);
             EmitSignal("PlayerSfxDbChanged", value);
         }
     }
 
     public float EnemySfxDb { 
-        get { return enemySfxDb; }
+        get { return _enemySfxDb; }
         set {
-            enemySfxDb = value;
-            EmitSignal("EnemySfxPaused", enemySfxDb == minDb);
+            _enemySfxDb = value;
+            EmitSignal("EnemySfxPaused", _enemySfxDb == minDb);
             EmitSignal("EnemySfxDbChanged", value);
         }
     }

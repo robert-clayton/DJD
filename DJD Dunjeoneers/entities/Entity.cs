@@ -4,7 +4,8 @@ using System;
 public abstract class Entity : KinematicBody2D{
     [Signal] public delegate float HealthChanged();
     [Signal] public delegate float EnergyChanged();
-    [Signal] public delegate void Dead();
+    [Signal] public delegate int Dead();
+    private int _deathValue = 1;
 
     // Declare member variables here. Examples:
     [Export] public float acceleration = 45;
@@ -107,7 +108,7 @@ public abstract class Entity : KinematicBody2D{
         }
     }
 
-    public virtual void PrepareDeath(){
+    protected virtual void PrepareDeath(){
         sprite.Stop();
         moveCollider.QueueFree();
         CollisionMask = 0;
@@ -115,8 +116,8 @@ public abstract class Entity : KinematicBody2D{
         deathTween.Start();
     }
 
-    public virtual void Die(){
-        EmitSignal("Dead");
+    protected virtual void Die(){
+        EmitSignal("Dead", _deathValue);
         QueueFree();
     }
 
@@ -129,13 +130,13 @@ public abstract class Entity : KinematicBody2D{
         EmitSignal(nameof(HealthChanged), curHealth);
     }
 
-    public virtual void SlowDown(){
+    protected virtual void SlowDown(){
         velocity = velocity.LinearInterpolate(new Vector2(0,0), .2f);
         if (velocity.DistanceTo(new Vector2(0,0)) < 0.1f)
             velocity = new Vector2(0,0);
     }
 
-    public Vector2 RandomDirection(){
+    protected Vector2 RandomDirection(){
         return new Vector2((float)rng.NextDouble() * 2 - 1, (float)rng.NextDouble() * 2 - 1);
     }
 

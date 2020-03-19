@@ -65,6 +65,7 @@
     <Compile Include="entities\enemies\slime_basic\SlimeBasic.cs" />
     <Compile Include="entities\enemies\slime_fire\SlimeFire.cs" />
     <Compile Include="entities\Entity.cs" />
+    <Compile Include="entities\gates\Gate.cs" />
     <Compile Include="entities\player\Mouse.cs" />
     <Compile Include="entities\player\Player.cs" />
     <Compile Include="entities\player\AbilityManager.cs" />
