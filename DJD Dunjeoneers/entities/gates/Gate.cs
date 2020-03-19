@@ -26,6 +26,11 @@ public class Gate : Node2D{
         _waveDefinition = waveDefinition;
         
         _sprite.Frames = ResourceLoader.Load("res://entities/gates/Gate.tres") as SpriteFrames;
+
+        Texture gradient = ResourceLoader.Load("res://assets/gradients/radial.png") as Texture;
+        _light.Texture = gradient;
+        _light.Scale = new Vector2(.1f, .1f);
+
         AddChild(_sprite);
         AddChild(_light);
         AddChild(_tween);
@@ -34,7 +39,7 @@ public class Gate : Node2D{
 
     public override void _Ready(){
         _sprite.Play("default");
-        _tween.InterpolateProperty(_light, "color", new Color(255, 255, 255, 0f), new Color(255, 255, 255, 1f), 2f);
+        _tween.InterpolateProperty(_light, "color", new Color(1f, 1f, 1f, 0f), new Color(1f, 1f, 1f, .4f), 2f);
         _tween.InterpolateCallback(this, 2f, "SetupWave");
         _tween.Start();
 
@@ -88,7 +93,7 @@ public class Gate : Node2D{
     }
 
     private void Finished(){
-        _tween.InterpolateProperty(_light, "color", new Color(255, 255, 255, 1f), new Color(255, 255, 255, 0f), 2f);
+        _tween.InterpolateProperty(_light, "color", _light.Color, new Color(1f, 1f, 1f, .0f), 2f);
         _tween.InterpolateCallback(this, 2f, "queue_free");
         _tween.Start();
         EmitSignal("Complete", this);
