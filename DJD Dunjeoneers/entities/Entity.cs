@@ -27,7 +27,11 @@ public abstract class Entity : KinematicBody2D{
     protected TextureProgress healthBar = new TextureProgress();
     protected Globals globals;
 
-    public Entity(int size = 8){
+    protected int size;
+
+    protected Entity(int size = 8)
+    {
+        this.size = size;
         deathTween.InterpolateProperty(this, "modulate", new Color(1f, 1f, 1f, 1f), new Color(1f, 1f, 1f, 0f), 1);
         deathTween.InterpolateCallback(this, 1, "Die");
         AddChild(deathTween);

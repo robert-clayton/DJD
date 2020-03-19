@@ -15,7 +15,7 @@ public class Golem : Boss{
     ParticlesMaterial mat = ResourceLoader.Load("res://entities/enemies/bosses/golem/overload_vent.tres") as ParticlesMaterial;
     AudioStreamPlayer findTargetSfx = new AudioStreamPlayer();
 
-    public Golem(Vector2 _position, Vector2 _moveAreaStart, Vector2 _moveAreaEnd) : base(_position, _moveAreaStart, _moveAreaEnd){
+    public Golem() {
         findTargetSfx.Stream = ResourceLoader.Load("res://assets/audio/boss_golem_find_target.wav") as AudioStreamSample;
         sprite.Frames = ResourceLoader.Load("res://entities/enemies/bosses/golem/Golem.tres") as SpriteFrames;
         ChangeState(EEnemyState.STATE_IDLE);

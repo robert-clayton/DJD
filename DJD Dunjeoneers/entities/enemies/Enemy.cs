@@ -20,9 +20,10 @@ public abstract class Enemy : Entity{
     protected Area2D _alertArea = new Area2D();
     protected float _touchDamage = 25f;
 
-    private Enemy() : base(){}
+    protected Enemy(int size = 8) : base(size){}
 
-    public Enemy(Vector2 _position, Vector2 _moveAreaStart, Vector2 _moveAreaEnd, int size = 8) : base(size){
+    public virtual void Initialize(Vector2 _position, Vector2 _moveAreaStart, Vector2 _moveAreaEnd)
+    {
         SetCollisionMaskBit(1, true);
         CollisionLayer = 0;
 
