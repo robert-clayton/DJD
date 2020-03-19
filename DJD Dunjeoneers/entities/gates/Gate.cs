@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Gate : Node2D{
 
-    [Signal] public delegate int Complete();
+    [Signal] public delegate Gate Complete();
     
     private AnimatedSprite _sprite = new AnimatedSprite();
     private Tween _tween = new Tween();
@@ -44,8 +44,8 @@ public class Gate : Node2D{
     }
 
     public void PopulateWaveEntities(){
+        GD.Print("spawning new enemies");
         _waveEntities = new List<Entity>();
-        // Vector2 newSpawnPosition = _floor.GetRandomSpawnLocation();
         foreach ((Type enemyType, int count) in _waveDefinition){
             for (int i = 0; i < count; i++)
                 _waveEntities.Add(Activator.CreateInstance(enemyType, Position, _floor.areaStart, _floor.areaEnd) as Entity);
@@ -90,6 +90,8 @@ public class Gate : Node2D{
     private void Finished(){
         _tween.InterpolateProperty(_light, "color", new Color(255, 255, 255, 1f), new Color(255, 255, 255, 0f), 2f);
         _tween.InterpolateCallback(this, 2f, "queue_free");
+        _tween.Start();
+        EmitSignal("Complete", this);
     }
 
     private void OnEntityDead(int value){

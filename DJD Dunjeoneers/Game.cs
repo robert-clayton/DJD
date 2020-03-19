@@ -8,7 +8,7 @@ public class Game : Node2D{
     private List<List<(Type, int)>> _waveDefinitions = new List<List<(Type, int)>>();
     private int _currentWave = 0;
     private AudioStreamPlayer _bgm;
-    private Gate _gate;
+    private List<Gate> _gates = new List<Gate>();
     private Globals _globals;
 
     public Game(){
@@ -17,7 +17,7 @@ public class Game : Node2D{
         var waveThree = new List<(Type, int)>();
         var waveFour = new List<(Type, int)>();
         var waveFive = new List<(Type, int)>();
-        var waveSix = new List<(Type, int)>();
+        // var waveSix = new List<(Type, int)>();
 
         waveOne.Add((typeof(SlimeBasic), 5));
         
@@ -33,16 +33,14 @@ public class Game : Node2D{
         waveFive.Add((typeof(SlimeBasic), 30));
         waveFive.Add((typeof(SlimeFire), 30));
         
-        waveSix.Add((typeof(Golem), 1));
+        // waveSix.Add((typeof(Golem), 1));
 
         _waveDefinitions.Add(waveOne);
-        _waveDefinitions.Add(waveTwo);
-        _waveDefinitions.Add(waveThree);
-        _waveDefinitions.Add(waveFour);
-        _waveDefinitions.Add(waveFive);
-        _waveDefinitions.Add(waveSix);
-
-        
+        // _waveDefinitions.Add(waveTwo);
+        // _waveDefinitions.Add(waveThree);
+        // _waveDefinitions.Add(waveFour);
+        // _waveDefinitions.Add(waveFive);
+        // _waveDefinitions.Add(waveSix);
     }
 
     public override void _Ready(){
@@ -52,8 +50,8 @@ public class Game : Node2D{
 
         _globals.Connect("MusicDbChanged", this, "OnMusicDbChanged");
         _globals.Connect("MusicPaused", this, "OnMusicPaused");
-        _gate = CreateNewGate();
-        GetTree().Root.CallDeferred("add_child", _gate);
+
+        CreateNewGates();
     }
 
     private void OnMusicDbChanged(float value){
@@ -64,26 +62,35 @@ public class Game : Node2D{
         _bgm.StreamPaused = enabled;
     }
 
-    public Gate CreateNewGate(){
-        Gate gate = new Gate(_floor, _waveDefinitions[3]);
-        gate.Position = _floor.GetRandomSpawnLocation();
+    public void CreateNewGates(){
+        foreach (var waveDefinition in _waveDefinitions){
+            Gate gate = new Gate(_floor, waveDefinition);
+            gate.Position = _floor.GetRandomSpawnLocation();
+            gate.Connect("Complete", this, "OnGateComplete");
+            GetTree().Root.CallDeferred("add_child", gate);
+            _gates.Add(gate);
+        }
+    }
 
-        return gate;
+    // Make this not shit
+    public void OnGateComplete(Gate completedGate){
+        if (_gates.Count == 0){
+            GetTree().Root.AddChild(new Golem((_floor.areaStart + _floor.areaEnd) / 2, _floor.areaStart, _floor.areaEnd));
+        }
     }
 
     public void Reset(){
-        foreach (Enemy enemy in GetTree().GetNodesInGroup("Enemies"))
-            enemy.QueueFree();
+        foreach (Enemy enemy in GetTree().GetNodesInGroup("Enemies")) enemy.QueueFree();
         
         if (IsInstanceValid(_player)) _player.QueueFree();
-        if (IsInstanceValid(_gate)) _gate.QueueFree();
         _player = new Player();
         _player.Position = (_floor.areaStart + _floor.areaEnd) / 2;
         _player.Connect("Dead", this, "Reset");
-
-        _gate = CreateNewGate();
         GetTree().Root.AddChild(_player);
-        GetTree().Root.AddChild(_gate);
+
+        foreach (Gate gate in _gates) if (IsInstanceValid(gate))gate.QueueFree();
+        _gates = new List<Gate>();
+        CreateNewGates();
     }
 
     public void SaveGame(string fileName = "savegame"){
