@@ -49,7 +49,6 @@ public class Gate : Node2D{
     }
 
     public void PopulateWaveEntities(){
-        GD.Print("spawning new enemies");
         _waveEntities = new List<Entity>();
         foreach ((Type enemyType, int count) in _waveDefinition){
             for (int i = 0; i < count; i++)
