@@ -87,7 +87,7 @@ public class Game : Node2D{
 
     public void SaveGame(string fileName = "savegame"){
         File saveGame = new File();
-        saveGame.Open(String.Format("user://{0}.dfd", fileName), File.ModeFlags.Write);
+        saveGame.Open($"user://{fileName}.dfd", File.ModeFlags.Write);
 
         foreach (Node saveNode in GetTree().GetNodesInGroup("Persist")){
             Dictionary<string, object> data = saveNode.Call("GetState") as Dictionary<string, object>;
@@ -98,21 +98,21 @@ public class Game : Node2D{
 
     public void LoadGame(string fileName){
         File saveGame = new File();
-        if (!saveGame.FileExists(String.Format("user://{0}.dfd", fileName)))
+        if (!saveGame.FileExists($"user://{fileName}.dfd"))
             return;
         
         // Remove Persist group nodes so they won't be doubled after load
         foreach (Node saveNode in GetTree().GetNodesInGroup("Persist"))
             saveNode.QueueFree();
         
-        saveGame.Open(String.Format("user://{0}.dfd", fileName), File.ModeFlags.Read);
+        saveGame.Open($"user://{fileName}.dfd", File.ModeFlags.Read);
         
         while (!saveGame.EofReached()){
             Dictionary<object, object> currentLine = JSON.Parse(saveGame.GetLine()).Result as Dictionary<object, object>;
             if (currentLine == null) continue;
 
             PackedScene newObjectScene = ResourceLoader.Load(currentLine["Filename"].ToString()) as PackedScene;
-            Node newObject = newObjectScene.Instance() as Node;
+            Node newObject = newObjectScene.Instance();
             GetNode(currentLine["Parent"].ToString()).AddChild(newObject);
             
             Vector2 pos = new Vector2();
