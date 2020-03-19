@@ -2,36 +2,34 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
+using EnemyGenerator = System.Func<Godot.Vector2, Godot.Vector2, Godot.Vector2, Enemy>;
+
 public class Game : Node2D{
     private Floor floor;
     private Player player;
-    List<List<(Type, int)>> waveDefinitions = new List<List<(Type, int)>>();
+    private readonly List<List<(EnemyGenerator, int)>> waveDefinitions = new List<List<(EnemyGenerator, int)>>();
     private int currentWave = 0;
     private AudioStreamPlayer bgm;
     private Globals globals;
 
+    
+    
     public Game(){
-        var waveOne = new List<(Type, int)>();
-        waveOne.Add((typeof(SlimeBasic), 5));
+        Enemy Slime(Vector2 p, Vector2 s, Vector2 e) => new SlimeBasic(p, s, e);
+        Enemy FireSlime(Vector2 p, Vector2 s, Vector2 e) => new SlimeFire(p, s, e);
+        Enemy Golem(Vector2 p, Vector2 s, Vector2 e) => new Golem(p, s, e);
 
-        var waveTwo = new List<(Type, int)>();
-        waveTwo.Add((typeof(SlimeBasic), 15));
-        waveTwo.Add((typeof(SlimeFire), 3));
+        var waveOne = new List<(EnemyGenerator, int)> {(Slime, 5)};
 
-        var waveThree = new List<(Type, int)>();
-        waveThree.Add((typeof(SlimeBasic), 20));
-        waveThree.Add((typeof(SlimeFire), 5));
+        var waveTwo = new List<(EnemyGenerator, int)> {(Slime, 15), (FireSlime, 3)};
 
-        var waveFour = new List<(Type, int)>();
-        waveFour.Add((typeof(SlimeBasic), 30));
-        waveFour.Add((typeof(SlimeFire), 15));
+        var waveThree = new List<(EnemyGenerator, int)> {(Slime, 20), (FireSlime, 5)};
 
-        var waveFive = new List<(Type, int)>();
-        waveFive.Add((typeof(SlimeBasic), 30));
-        waveFive.Add((typeof(SlimeFire), 30));
+        var waveFour = new List<(EnemyGenerator, int)> {(Slime, 30), (FireSlime, 15)};
 
-        var waveSix = new List<(Type, int)>();
-        waveSix.Add((typeof(Golem), 1));
+        var waveFive = new List<(EnemyGenerator, int)> {(Slime, 30), (FireSlime, 30)};
+
+        var waveSix = new List<(EnemyGenerator, int)> {(Golem, 1)};
 
         waveDefinitions.Add(waveOne);
         waveDefinitions.Add(waveTwo);
@@ -77,11 +75,11 @@ public class Game : Node2D{
         }
     }
 
-    public void SpawnEnemies(List<(Type, int)> waveDefinition){
-        foreach ((Type enemyType, int count) in waveDefinition){
+    private void SpawnEnemies(List<(EnemyGenerator, int)> waveDefinition){
+        foreach (var (constructEnemy, count) in waveDefinition){
             for (int i = 0; i < count; i++){
                 Vector2 newSpawnPosition = floor.GetRandomSpawnLocation();
-                var enemy = Activator.CreateInstance(enemyType, newSpawnPosition, floor.areaStart, floor.areaEnd);
+                var enemy = constructEnemy(newSpawnPosition, floor.areaStart, floor.areaEnd);
                 GetTree().Root.CallDeferred("add_child", enemy);
             }
         }
