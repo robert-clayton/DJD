@@ -36,10 +36,10 @@ public class Game : Node2D{
         // waveSix.Add((typeof(Golem), 1));
 
         _waveDefinitions.Add(waveOne);
-        // _waveDefinitions.Add(waveTwo);
-        // _waveDefinitions.Add(waveThree);
-        // _waveDefinitions.Add(waveFour);
-        // _waveDefinitions.Add(waveFive);
+        _waveDefinitions.Add(waveTwo);
+        _waveDefinitions.Add(waveThree);
+        _waveDefinitions.Add(waveFour);
+        _waveDefinitions.Add(waveFive);
         // _waveDefinitions.Add(waveSix);
     }
 
