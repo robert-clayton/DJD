@@ -81,7 +81,7 @@ public abstract class Enemy : Entity{
         }
     }
 
-    public override void PrepareDeath(){
+    protected override void PrepareDeath(){
         base.PrepareDeath();
         ChangeState(EEnemyState.STATE_DYING);
         RemoveFromGroup("Enemies");

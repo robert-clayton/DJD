@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 
 public class Game : Node2D{
-    private Floor floor;
+    private Floor _floor;
     private Player _player;
     private List<List<(Type, int)>> _waveDefinitions = new List<List<(Type, int)>>();
     private int _currentWave = 0;
-    private int _currentWaveGateValue = 0;
-    private AudioStreamPlayer bgm;
-    private Globals globals;
+    private AudioStreamPlayer _bgm;
+    private Gate _gate;
+    private Globals _globals;
 
     public Game(){
         var waveOne = new List<(Type, int)>();
@@ -41,53 +41,49 @@ public class Game : Node2D{
         _waveDefinitions.Add(waveFour);
         _waveDefinitions.Add(waveFive);
         _waveDefinitions.Add(waveSix);
+
+        
     }
 
     public override void _Ready(){
-        globals = GetTree().Root.GetNode("Globals") as Globals;
-        floor = GetNode<Floor>("Floor");
-        bgm = GetNode<AudioStreamPlayer>("BGM");
+        _globals = GetTree().Root.GetNode("Globals") as Globals;
+        _floor = GetNode<Floor>("Floor");
+        _bgm = GetNode<AudioStreamPlayer>("BGM");
 
-        globals.Connect("MusicDbChanged", this, "OnMusicDbChanged");
-        globals.Connect("MusicPaused", this, "OnMusicPaused");
+        _globals.Connect("MusicDbChanged", this, "OnMusicDbChanged");
+        _globals.Connect("MusicPaused", this, "OnMusicPaused");
+        _gate = CreateNewGate();
+        GetTree().Root.CallDeferred("add_child", _gate);
     }
 
     private void OnMusicDbChanged(float value){
-        bgm.VolumeDb = value;
+        _bgm.VolumeDb = value;
     }
 
     private void OnMusicPaused(bool enabled){
-        bgm.StreamPaused = enabled;
+        _bgm.StreamPaused = enabled;
+    }
+
+    public Gate CreateNewGate(){
+        Gate gate = new Gate(_floor, _waveDefinitions[3]);
+        gate.Position = _floor.GetRandomSpawnLocation();
+
+        return gate;
     }
 
     public void Reset(){
         foreach (Enemy enemy in GetTree().GetNodesInGroup("Enemies"))
             enemy.QueueFree();
-        _currentWave = 0;
+        
         if (IsInstanceValid(_player)) _player.QueueFree();
+        if (IsInstanceValid(_gate)) _gate.QueueFree();
         _player = new Player();
-        _player.Position = (floor.areaStart + floor.areaEnd) / 2;
+        _player.Position = (_floor.areaStart + _floor.areaEnd) / 2;
         _player.Connect("Dead", this, "Reset");
-        AddChild(_player);
-        SpawnEnemies(_waveDefinitions[_currentWave]);
-    }
 
-    public override void _Process(float delta){
-        if (GetTree().GetNodesInGroup("Enemies").Count == 0){
-            if (++_currentWave < _waveDefinitions.Count){
-                SpawnEnemies(_waveDefinitions[_currentWave]);
-            }
-        }
-    }
-
-    public void SpawnEnemies(List<(Type, int)> waveDefinition){
-        foreach ((Type enemyType, int count) in waveDefinition){
-            for (int i = 0; i < count; i++){
-                Vector2 newSpawnPosition = floor.GetRandomSpawnLocation();
-                var enemy = Activator.CreateInstance(enemyType, newSpawnPosition, floor.areaStart, floor.areaEnd);
-                GetTree().Root.CallDeferred("add_child", enemy);
-            }
-        }
+        _gate = CreateNewGate();
+        GetTree().Root.AddChild(_player);
+        GetTree().Root.AddChild(_gate);
     }
 
     public void SaveGame(string fileName = "savegame"){

@@ -5,7 +5,8 @@ public abstract class Entity : KinematicBody2D{
     [Signal] public delegate float HealthChanged();
     [Signal] public delegate float EnergyChanged();
     [Signal] public delegate int Dead();
-    private int _deathValue = 1;
+    
+    public int DeathValue { get; protected set; } = 1;
 
     // Declare member variables here. Examples:
     [Export] public float acceleration = 45;
@@ -27,6 +28,8 @@ public abstract class Entity : KinematicBody2D{
     protected CollisionShape2D moveCollider = new CollisionShape2D();
     protected TextureProgress healthBar = new TextureProgress();
     protected Globals globals;
+
+    private Entity(){}
 
     public Entity(int size = 8){
         deathTween.InterpolateProperty(this, "modulate", new Color(1f, 1f, 1f, 1f), new Color(1f, 1f, 1f, 0f), 1);
@@ -117,7 +120,7 @@ public abstract class Entity : KinematicBody2D{
     }
 
     protected virtual void Die(){
-        EmitSignal("Dead", _deathValue);
+        EmitSignal("Dead", DeathValue);
         QueueFree();
     }
 
