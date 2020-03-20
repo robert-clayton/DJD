@@ -70,7 +70,7 @@ public abstract class Enemy : Entity{
     protected virtual void _OnEnemySfxPaused(bool paused){}
 
     public override void Damage(float damage, Vector2 knockback = default(Vector2)){
-        if (curHealth == 0) return;
+        if (CurHealth == 0) return;
         base.Damage(damage, knockback);
         GetParent().GetNode("Game").GetNode<Camera>("Camera").ShakeFromDamage(2f);
 
@@ -111,7 +111,7 @@ public abstract class Enemy : Entity{
 
     public override void _Process(float delta){
         base._Process(delta);
-        if (curHealth < 0)
+        if (CurHealth < 0)
             PrepareDeath();
         else if (_moveTarget == _moveTargetNone){
             _moveTarget = RandomPointInMovableArea();
@@ -126,7 +126,7 @@ public abstract class Enemy : Entity{
         base._PhysicsProcess(delta);
         if (_state == EEnemyState.STATE_IDLE || _state == EEnemyState.STATE_STUNNED || _state == EEnemyState.STATE_DYING) return;
         if (_moveTarget != _moveTargetNone){
-            velocity = (velocity + Position.DirectionTo(_moveTarget) * acceleration * delta).Clamped(maxVelocity * delta);
+            velocity = (velocity + Position.DirectionTo(_moveTarget) * Acceleration * delta).Clamped(MaxVelocity * delta);
             sprite.FlipH = velocity.x < 0;
             var result = MoveAndCollide(velocity);
             if (IsInstanceValid(result)){

@@ -77,7 +77,7 @@ public class Game : Node2D{
             Gates.Add(newGate);
             newGate.Connect("Complete", this, "OnGateComplete");
             if (idx == 0) newGate.ActivateOnReady = true;
-            else Gates[idx-1].Connect("Complete", newGate, "Activate"); // TOOD: Make next gate activate when 2/3 of total value reached
+            else Gates[idx-1].Connect("ThresholdReached", newGate, "Activate");
         }
     }
 
@@ -131,10 +131,8 @@ public class Game : Node2D{
             gate.QueueFree();
         }
         Gates = new List<Gate>();
-        if (_currentWave < _waveDefinitions.Count - 1){
-            GD.Print("Creating next wave's gates!");
+        if (_currentWave < _waveDefinitions.Count - 1)
             CreateNewGates(++_currentWave);
-        }
         else GetTree().Root.AddChild(new Golem((_floor.areaStart + _floor.areaEnd) / 2, _floor.areaStart, _floor.areaEnd));
     }
 

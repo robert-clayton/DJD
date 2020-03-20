@@ -21,7 +21,6 @@ public class Player : Entity{
     private Tween _lightTween = new Tween();
 
     public Player() : base(){
-        maxHealth = curHealth = 100f;
         SetCollisionMaskBit(1, true);
         sprite.Frames = ResourceLoader.Load("res://entities/player/Player.tres") as SpriteFrames;
         sprite.Play("default");
@@ -73,7 +72,7 @@ public class Player : Entity{
         );
         if (motion.Length() == 0){
             SlowDown();
-        } else velocity = (velocity + motion.Normalized() * acceleration * delta).Clamped(maxVelocity * delta);
+        } else velocity = (velocity + motion.Normalized() * Acceleration * delta).Clamped(MaxVelocity * delta);
         KinematicCollision2D result = MoveAndCollide(velocity);
         if (IsInstanceValid(result)) MoveAndCollide(result.Normal.Slide(motion));
     }
@@ -99,13 +98,13 @@ public class Player : Entity{
     }
 
     private void OnTouchedByEnemy(Enemy enemy){
-        Damage(maxHealth/4f, Position.DirectionTo(enemy.Position) * -100f);
+        Damage(MaxHealth/4f, Position.DirectionTo(enemy.Position) * -100f);
     }
 
     public override void Damage(float damage, Vector2 knockback = default(Vector2)){
-        if (curHealth == 0) return;
+        if (CurHealth == 0) return;
         base.Damage(damage, knockback);
-        float healthPercent = curHealth / maxHealth;        
+        float healthPercent = CurHealth / MaxHealth;        
         Vector2 newScale = _baseLightScale * (float)(healthPercent * healthPercent * (3f - 2f * healthPercent) * .7 + .3);
         _lightTween.Stop(_light, "scale");
         _lightTween.InterpolateProperty(_light, "scale", _light.Scale, newScale, .3f);

@@ -5,20 +5,19 @@ public abstract class Entity : KinematicBody2D{
     [Signal] public delegate float HealthChanged();
     [Signal] public delegate float EnergyChanged();
     [Signal] public delegate Entity Dead();
-    
+
+    public float MaxHealth {get; set;} = 100f;
+    public float CurHealth {get; set;} = 100f;
+    public float MaxEnergy {get; set;} = 100f;
+    public float CurEnergy {get; set;} = 100f;
+    public float Acceleration {get; set;} = 45f;
+    public float MaxVelocity {get; set;} = 90f;
     public int DeathValue { get; protected set; } = 1;
 
-    // Declare member variables here. Examples:
-    [Export] public float acceleration = 45;
-    [Export] public float maxVelocity = 90;
     public Vector2 velocity = new Vector2();
     public AnimatedSprite sprite = new AnimatedSprite();
     public Sprite shadow = new Sprite();
-    
-    [Export] public float maxEnergy = 100f;
-    [Export] public float maxHealth = 100f;
-    [Export] public float curEnergy = 100f;
-    [Export] public float curHealth = 100f;
+
     protected float knockbackDeceleration = 5f;
     protected float knockbackCutoff = 4f;
     protected Vector2 knockbackVelocity = new Vector2();
@@ -87,8 +86,8 @@ public abstract class Entity : KinematicBody2D{
     }
 
     public override void _Ready(){
-        healthBar.MaxValue = maxHealth;
-        healthBar.Value = curHealth;
+        healthBar.MaxValue = MaxHealth;
+        healthBar.Value = CurHealth;
         globals = GetTree().Root.GetNode("Globals") as Globals;
     }
 
@@ -120,17 +119,17 @@ public abstract class Entity : KinematicBody2D{
     }
 
     protected virtual void Die(){
-        EmitSignal("Dead", this);
+        EmitSignal(nameof(Dead), this);
         QueueFree();
     }
 
     public virtual void Damage(float damage, Vector2 knockback = new Vector2()){
-        curHealth = Mathf.Max(curHealth - damage, 0);
-        healthBar.Value = curHealth;
+        CurHealth = Mathf.Max(CurHealth - damage, 0);
+        healthBar.Value = CurHealth;
         knockbackVelocity += knockback * (1 - knockbackResistance);
-        if (curHealth <= 0) PrepareDeath();
-        if (curHealth < maxHealth) healthBar.Show();
-        EmitSignal(nameof(HealthChanged), curHealth);
+        if (CurHealth <= 0) PrepareDeath();
+        if (CurHealth < MaxHealth) healthBar.Show();
+        EmitSignal(nameof(HealthChanged), CurHealth);
     }
 
     protected virtual void SlowDown(){
