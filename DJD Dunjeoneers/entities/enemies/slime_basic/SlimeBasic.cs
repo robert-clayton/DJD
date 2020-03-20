@@ -2,7 +2,8 @@ using Godot;
 using System;
 
 public class SlimeBasic : Enemy{
-    public SlimeBasic(Vector2 _position, Vector2 _moveAreaStart, Vector2 _moveAreaEnd) : base(_position, _moveAreaStart, _moveAreaEnd){
+    public SlimeBasic()
+    {
         maxEnergy = 100f;
         curEnergy = 100f;
         maxHealth = 100f;

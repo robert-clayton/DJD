@@ -2,36 +2,39 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
+using EnemyGenerator = System.Func<Godot.Vector2, Godot.Vector2, Godot.Vector2, Enemy>;
+using Wave = System.Collections.Generic.List<System.ValueTuple<System.Func<Godot.Vector2, Godot.Vector2, Godot.Vector2, Enemy>, int>>;
 public class Game : Node2D{
     private Floor floor;
     private Player player;
-    List<List<(Type, int)>> waveDefinitions = new List<List<(Type, int)>>();
+    private readonly List<Wave> waveDefinitions = new List<Wave>();
     private int currentWave = 0;
     private AudioStreamPlayer bgm;
     private Globals globals;
 
-    public Game(){
-        var waveOne = new List<(Type, int)>();
-        waveOne.Add((typeof(SlimeBasic), 5));
+    private static EnemyGenerator Spawn<T>() where T : Enemy, new()
+    {
+        return (p, s, e) =>
+        {
+            Enemy enemy = new T();
+            enemy.Initialize(p, s, e);
+            return enemy;
+        };
+    }
+    
+    public Game()
+    {
+        EnemyGenerator
+            slime = Spawn<SlimeBasic>(),
+            fireSlime = Spawn<SlimeFire>(),
+            golem = Spawn<Golem>();
 
-        var waveTwo = new List<(Type, int)>();
-        waveTwo.Add((typeof(SlimeBasic), 15));
-        waveTwo.Add((typeof(SlimeFire), 3));
-
-        var waveThree = new List<(Type, int)>();
-        waveThree.Add((typeof(SlimeBasic), 20));
-        waveThree.Add((typeof(SlimeFire), 5));
-
-        var waveFour = new List<(Type, int)>();
-        waveFour.Add((typeof(SlimeBasic), 30));
-        waveFour.Add((typeof(SlimeFire), 15));
-
-        var waveFive = new List<(Type, int)>();
-        waveFive.Add((typeof(SlimeBasic), 30));
-        waveFive.Add((typeof(SlimeFire), 30));
-
-        var waveSix = new List<(Type, int)>();
-        waveSix.Add((typeof(Golem), 1));
+        var waveOne = new Wave {(slime, 5)};
+        var waveTwo = new Wave {(slime, 15), (fireSlime, 3)};
+        var waveThree = new Wave {(slime, 20), (fireSlime, 5)};
+        var waveFour = new Wave {(slime, 30), (fireSlime, 15)};
+        var waveFive = new Wave {(slime, 30), (fireSlime, 30)};
+        var waveSix = new Wave {(golem, 1)};
 
         waveDefinitions.Add(waveOne);
         waveDefinitions.Add(waveTwo);
@@ -77,11 +80,11 @@ public class Game : Node2D{
         }
     }
 
-    public void SpawnEnemies(List<(Type, int)> waveDefinition){
-        foreach ((Type enemyType, int count) in waveDefinition){
+    private void SpawnEnemies(Wave waveDefinition){
+        foreach (var (constructEnemy, count) in waveDefinition){
             for (int i = 0; i < count; i++){
                 Vector2 newSpawnPosition = floor.GetRandomSpawnLocation();
-                var enemy = Activator.CreateInstance(enemyType, newSpawnPosition, floor.areaStart, floor.areaEnd);
+                var enemy = constructEnemy(newSpawnPosition, floor.areaStart, floor.areaEnd);
                 GetTree().Root.CallDeferred("add_child", enemy);
             }
         }
@@ -89,7 +92,7 @@ public class Game : Node2D{
 
     public void SaveGame(string fileName = "savegame"){
         File saveGame = new File();
-        saveGame.Open(String.Format("user://{0}.dfd", fileName), File.ModeFlags.Write);
+        saveGame.Open($"user://{fileName}.dfd", File.ModeFlags.Write);
 
         foreach (Node saveNode in GetTree().GetNodesInGroup("Persist")){
             Dictionary<string, object> data = saveNode.Call("GetState") as Dictionary<string, object>;
@@ -100,21 +103,21 @@ public class Game : Node2D{
 
     public void LoadGame(string fileName){
         File saveGame = new File();
-        if (!saveGame.FileExists(String.Format("user://{0}.dfd", fileName)))
+        if (!saveGame.FileExists($"user://{fileName}.dfd"))
             return;
         
         // Remove Persist group nodes so they won't be doubled after load
         foreach (Node saveNode in GetTree().GetNodesInGroup("Persist"))
             saveNode.QueueFree();
         
-        saveGame.Open(String.Format("user://{0}.dfd", fileName), File.ModeFlags.Read);
+        saveGame.Open($"user://{fileName}.dfd", File.ModeFlags.Read);
         
         while (!saveGame.EofReached()){
             Dictionary<object, object> currentLine = JSON.Parse(saveGame.GetLine()).Result as Dictionary<object, object>;
             if (currentLine == null) continue;
 
             PackedScene newObjectScene = ResourceLoader.Load(currentLine["Filename"].ToString()) as PackedScene;
-            Node newObject = newObjectScene.Instance() as Node;
+            Node newObject = newObjectScene.Instance();
             GetNode(currentLine["Parent"].ToString()).AddChild(newObject);
             
             Vector2 pos = new Vector2();
