@@ -136,7 +136,7 @@ public class Game : Node2D{
         else GetTree().Root.AddChild(new Golem((_floor.areaStart + _floor.areaEnd) / 2, _floor.areaStart, _floor.areaEnd));
     }
 
-    public void Reset(){
+    public void Reset(Entity _ = null){
         foreach (Enemy enemy in GetTree().GetNodesInGroup("Enemies")) enemy.QueueFree();
         
         if (IsInstanceValid(_player)) _player.QueueFree();
