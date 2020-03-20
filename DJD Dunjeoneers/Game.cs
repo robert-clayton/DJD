@@ -74,6 +74,7 @@ public class Game : Node2D{
 
     // Make this not shit
     public void OnGateComplete(Gate completedGate){
+        _gates.Remove(completedGate);
         if (_gates.Count == 0){
             GetTree().Root.AddChild(new Golem((_floor.areaStart + _floor.areaEnd) / 2, _floor.areaStart, _floor.areaEnd));
         }
