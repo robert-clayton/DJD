@@ -4,7 +4,7 @@ using System;
 public abstract class Entity : KinematicBody2D{
     [Signal] public delegate float HealthChanged();
     [Signal] public delegate float EnergyChanged();
-    [Signal] public delegate int Dead();
+    [Signal] public delegate Entity Dead();
     
     public int DeathValue { get; protected set; } = 1;
 
@@ -120,7 +120,7 @@ public abstract class Entity : KinematicBody2D{
     }
 
     protected virtual void Die(){
-        EmitSignal("Dead", DeathValue);
+        EmitSignal("Dead", this);
         QueueFree();
     }
 
