@@ -47,7 +47,7 @@ public abstract class Entity : KinematicBody2D{
             EmitSignal(nameof(EnergyChanged), _curEnergy);
         }
     }
-    public float Acceleration {get; set;} = 180f;
+    public float Acceleration {get; set;} = 270f;
     public float MaxVelocity {get; set;} = 90f;
     public int DeathValue { get; protected set; } = 1;
 
@@ -77,7 +77,7 @@ public abstract class Entity : KinematicBody2D{
         deathTween.InterpolateProperty(this, "modulate", new Color(1f, 1f, 1f, 1f), new Color(1f, 1f, 1f, 0f), 1);
         deathTween.InterpolateCallback(this, 1, nameof(Die));
         AddChild(deathTween);
-        var moveShape = new RectangleShape2D();
+        RectangleShape2D moveShape = new RectangleShape2D();
         moveCollider.Shape = moveShape;
         moveCollider.Position = new Vector2(0, size/3f);
 

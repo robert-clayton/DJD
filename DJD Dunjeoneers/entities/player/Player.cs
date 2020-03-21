@@ -12,7 +12,7 @@ public class Player : Entity{
 
     private AbilityManager abilityManager = new AbilityManager();
     [Export] public EPlayerState state = EPlayerState.STATE_IDLE;
-    [Export] public EAbilities primary = EAbilities.PYROBLAST;
+    [Export] public EAbilities primary = EAbilities.FIREBALL;
     [Export] public EAbilities secondary = EAbilities.CHAIN_LIGHTNING;
     private Light2D _light = new Light2D();
     private Vector2 _baseLightScale = new Vector2(.5f, .5f);
@@ -30,9 +30,9 @@ public class Player : Entity{
         sprite.Play("default");
         ChangeState(state);
 
-        var hurtArea = new Area2D();
-        var hurtCollider = new CollisionShape2D();
-        var hurtBoxShape = new RectangleShape2D();
+        Area2D hurtArea = new Area2D();
+        CollisionShape2D hurtCollider = new CollisionShape2D();
+        RectangleShape2D hurtBoxShape = new RectangleShape2D();
         hurtArea.SetCollisionLayerBit(19, true);
         hurtArea.SetCollisionLayerBit(0, false);
         hurtArea.CollisionMask = 0;

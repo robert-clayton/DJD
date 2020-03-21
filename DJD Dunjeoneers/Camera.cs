@@ -17,7 +17,7 @@ public class Camera : Camera2D
         AddChild(shakeTravelTimer);
         shakeTravelTimer.WaitTime = 0.1f;
         shakeTravelTimer.OneShot = true;
-        shakeTravelTimer.Connect("timeout", this, "_OnShakeTravelTimeout");
+        shakeTravelTimer.Connect("timeout", this, nameof(OnShakeTravelTimeout));
     }
 
     public override void _EnterTree(){
@@ -34,7 +34,7 @@ public class Camera : Camera2D
         return new Vector2(Mathf.Lerp(a.x, b.x, weight), Mathf.Lerp(a.y, a.y, weight));
     }
 
-    private void _OnShakeTravelTimeout(){
+    private void OnShakeTravelTimeout(){
         if (shakingTo){
             Position = shakePos;
             shakingTo = false;
@@ -49,12 +49,11 @@ public class Camera : Camera2D
     }
 
     public void ShakeFromDamage(float amplitude){
-        if (!alreadyShaking){
-            alreadyShaking = true;
-            shakePos = GetNewShakeDirection() * amplitude;
-            shakeTravelTimer.Start();
-            shakingTo = true;
-        }
+        if (alreadyShaking) return;
+        alreadyShaking = true;
+        shakePos = GetNewShakeDirection() * amplitude;
+        shakeTravelTimer.Start();
+        shakingTo = true;
     }
 
     public Vector2 GetNewShakeDirection(){

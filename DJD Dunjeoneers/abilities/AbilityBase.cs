@@ -19,7 +19,6 @@ public abstract class AbilityBase : Node2D{
 
     public float Acceleration {get; set;} = 100f;
     public Timer lifetime = new Timer();
-    public Tween initVelDecelerationTween = new Tween();
     protected int targetLayer = -1;
     protected float knockbackStrength = 50f;
     protected int maxPierces = 0;
@@ -42,9 +41,6 @@ public abstract class AbilityBase : Node2D{
 
     public override void _Ready(){
         AddChild(lifetime);
-        AddChild(initVelDecelerationTween);
-        initVelDecelerationTween.InterpolateProperty(this, nameof(InitialVelocity), InitialVelocity, default(Vector2), 0.5f);
-        initVelDecelerationTween.Start();
     }
 
     public Vector2 AccelerateExponential(Vector2 currentVelocity, int power = 2){

@@ -42,6 +42,8 @@ public class Fireball : ProjectileBase{
         AddChild(sprite);
 
         // Collider
+        hitArea.CollisionLayer = 0;
+        hitArea.SetCollisionMaskBit(0, false);
         hitArea.SetCollisionMaskBit(targetLayer, true);
         AddChild(hitArea);
         CollisionShape2D shape = new CollisionShape2D();
@@ -78,9 +80,9 @@ public class Fireball : ProjectileBase{
         AddChild(fireTrailEmitter);
 
         // Timers
-        var targetColor =  new Color(light.Color.r, light.Color.g, light.Color.b, light.Color.a*2);
-        var targetColorNone = new Color(light.Color.r, light.Color.g, light.Color.b, 0);
-        var targetScale = light.Scale * 3 * Mathf.Clamp((float)new Random().NextDouble(), .5f, 1f);
+        Color targetColor =  new Color(light.Color.r, light.Color.g, light.Color.b, light.Color.a*2);
+        Color targetColorNone = new Color(light.Color.r, light.Color.g, light.Color.b, 0);
+        Vector2 targetScale = light.Scale * 3 * Mathf.Clamp((float)new Random().NextDouble(), .5f, 1f);
         onHitTween.InterpolateProperty(light, "color", light.Color, targetColor, .2f, easeType: Tween.EaseType.Out);
         onHitTween.InterpolateProperty(light, "color", targetColor, targetColorNone, .1f, easeType: Tween.EaseType.Out, delay: .2f);
         onHitTween.InterpolateProperty(light, "scale", light.Scale, targetScale, .1f);
@@ -106,20 +108,20 @@ public class Fireball : ProjectileBase{
     }
 
     public virtual void _OnHurtAreaEnter(Area2D _ = null){
-        Explode();
+        if (!exploded) Explode();
     }
 
     public virtual void Explode(){
+        lifetime.Disconnect("timeout", this, nameof(Explode));
+        exploded = true;
         onHitTween.Start();
         fireTrailEmitter.Emitting = false;
         smokeTrailEmitter.Emitting = false;
         smokeTrailEmitter.Scale = default(Vector2);
         explosionMaterial.Gravity = new Vector3(Velocity.Length()/2, 0f, 0f);
         explosionEmitter.Emitting = true;
-        exploded = true;
         sprite.Visible = false;
-        hitArea.CollisionLayer = 0;
-        hitArea.CollisionMask = 0;
+        hitArea.QueueFree();
         DamageNearby();
     }
 
