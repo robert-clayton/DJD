@@ -20,7 +20,10 @@ public class Player : Entity{
     private bool _useSecondary = false;
     private Tween _lightTween = new Tween();
 
-    public Player() : base(){
+    public Player() : base(){}
+
+    public void Initialize(Vector2 position){
+        base.Initialize(position);
         SetCollisionMaskBit(1, true);
         sprite.Frames = ResourceLoader.Load("res://entities/player/Player.tres") as SpriteFrames;
         sprite.Play("default");

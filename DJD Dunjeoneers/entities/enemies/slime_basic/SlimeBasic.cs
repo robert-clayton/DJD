@@ -2,7 +2,12 @@ using Godot;
 using System;
 
 public class SlimeBasic : Enemy{
-    public SlimeBasic(Vector2 _position, Vector2 _moveAreaStart, Vector2 _moveAreaEnd) : base(_position, _moveAreaStart, _moveAreaEnd){
+    public SlimeBasic() : base(){}
+
+    public override void Initialize(Vector2 position, int size = 8){
+        base.Initialize(position, size: size);
+        MaxHealth = 100f;
+        CurHealth = 100f;
         knockbackCutoff = 4f;
         knockbackDeceleration = 5f;
         Acceleration = 4f;

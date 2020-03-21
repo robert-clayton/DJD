@@ -5,8 +5,11 @@ public class SlimeFire : Enemy{
     private Particles2D _fireEmitter = new Particles2D();
     private ParticlesMaterial _fireMaterial = ResourceLoader.Load("res://particles/burn.tres") as ParticlesMaterial;
 
-    public SlimeFire(Vector2 _position, Vector2 _moveAreaStart, Vector2 _moveAreaEnd) : base(_position, _moveAreaStart, _moveAreaEnd){
-        MaxHealth *= 2;
+    public SlimeFire() : base(){}
+
+    public override void Initialize(Vector2 position, int size = 8){
+        base.Initialize(position, size: size);
+        MaxHealth *= 2f;
         CurHealth *= 2f;
         knockbackCutoff = 4f;
         knockbackDeceleration = 5f;
@@ -20,8 +23,8 @@ public class SlimeFire : Enemy{
         _fireEmitter.Amount = 25;
         _fireEmitter.ProcessMaterial = _fireMaterial;
         AddChild(_fireEmitter);
-        
     }
+    
 
     public override void _Process(float delta){
         base._Process(delta);

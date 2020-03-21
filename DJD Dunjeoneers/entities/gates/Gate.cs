@@ -94,13 +94,13 @@ public class Gate : Node2D{
         _tween.InterpolateProperty(_sprite, "scale", Scale, Scale * 1.5f, 1f);
 
         foreach (Entity entity in EntitiesToSpawn){
-            _tween.InterpolateProperty(entity, "scale", entity.Scale, entity.Scale * 2, 1f);
-            entity.MaxHealth = entity.CurHealth = entity.MaxHealth * 2;
+            _tween.InterpolateProperty(entity, "scale", entity.Scale, entity.Scale * 1.3f, 1f);
+            entity.MaxHealth = entity.CurHealth = entity.MaxHealth * 2f;
             entity.MaxVelocity *= 2;
         }
         foreach (Entity entity in EntitiesActive){
-            _tween.InterpolateProperty(entity, "scale", entity.Scale, entity.Scale * 2, 1f);
-            entity.MaxHealth = entity.CurHealth = entity.MaxHealth * 2;
+            _tween.InterpolateProperty(entity, "scale", entity.Scale, entity.Scale * 1.3f, 1f);
+            entity.MaxHealth = entity.CurHealth = entity.MaxHealth * 2f;
             entity.MaxVelocity *= 2;
         }
 

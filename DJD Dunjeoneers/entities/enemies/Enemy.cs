@@ -9,9 +9,6 @@ public abstract class Enemy : Entity{
         STATE_DYING,
         STATE_ALERTED,
     }
-
-    public Vector2 moveAreaStart;
-    public Vector2 moveAreaEnd;
     protected Vector2 _moveTargetNone = new Vector2(-100000, -10000);
     protected Vector2 _moveTarget = new Vector2(-100000, -10000);
     [Export] public EEnemyState _state = EEnemyState.STATE_IDLE;
@@ -20,16 +17,12 @@ public abstract class Enemy : Entity{
     protected Area2D _alertArea = new Area2D();
     protected float _touchDamage = 25f;
 
-    private Enemy() : base(){}
+    protected Enemy() : base(){}
 
-    public Enemy(Vector2 _position, Vector2 _moveAreaStart, Vector2 _moveAreaEnd, int size = 8) : base(size){
+    public override void Initialize(Vector2 position, int size = 8){
+        base.Initialize(Position, size: size);
         SetCollisionMaskBit(1, true);
         CollisionLayer = 0;
-
-        Position = _position;
-        moveAreaStart = _moveAreaStart;
-        moveAreaEnd = _moveAreaEnd;
-        
         var hurtCollider = new CollisionShape2D();
         var hurtBoxShape = new RectangleShape2D();
         _hurtArea.SetCollisionLayerBit(0, false);
@@ -37,7 +30,7 @@ public abstract class Enemy : Entity{
         _hurtArea.SetCollisionMaskBit(19, true);
         _hurtArea.SetCollisionMaskBit(0, false);
         _hurtArea.Name = "HurtBox";
-        hurtBoxShape.Extents = new Vector2(size/2, size/2);
+        hurtBoxShape.Extents = new Vector2(size/2f, size/2f);
         hurtCollider.Shape = hurtBoxShape;
         _hurtArea.AddChild(hurtCollider);
         AddChild(_hurtArea);
@@ -102,19 +95,12 @@ public abstract class Enemy : Entity{
         }
     }
 
-    public Vector2 RandomPointInMovableArea(bool force = false){
-        return new Vector2(
-            rng.Next((int)moveAreaStart.x, (int)moveAreaEnd.x), 
-            rng.Next((int)moveAreaStart.y, (int)moveAreaEnd.y)
-        );
-    }
-
     public override void _Process(float delta){
         base._Process(delta);
         if (CurHealth < 0)
             PrepareDeath();
         else if (_moveTarget == _moveTargetNone){
-            _moveTarget = RandomPointInMovableArea();
+            _moveTarget = Position + RandomDirection() * MaxVelocity * 5f;
             ChangeState(EEnemyState.STATE_MOVING);
         } else if (_state == EEnemyState.STATE_ALERTED){
             if (IsInstanceValid(_player)) _moveTarget = _player.Position;
