@@ -19,7 +19,7 @@ v0.0.5
 
 v0.0.4-alpha
 - Added Red Gates
-- - Kill enemies near the gate that spawned them to increase gate's difficulty!
+  - Kill enemies near the gate that spawned them to increase gate's difficulty!
 
 v0.0.3-alpha
 - Golem Boss Ability: Overload Vent
