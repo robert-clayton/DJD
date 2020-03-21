@@ -23,8 +23,8 @@ public abstract class Enemy : Entity{
         base.Initialize(Position, size: size);
         SetCollisionMaskBit(1, true);
         CollisionLayer = 0;
-        var hurtCollider = new CollisionShape2D();
-        var hurtBoxShape = new RectangleShape2D();
+        CollisionShape2D hurtCollider = new CollisionShape2D();
+        RectangleShape2D hurtBoxShape = new RectangleShape2D();
         _hurtArea.SetCollisionLayerBit(0, false);
         _hurtArea.SetCollisionLayerBit(2, true);
         _hurtArea.SetCollisionMaskBit(19, true);
@@ -36,8 +36,8 @@ public abstract class Enemy : Entity{
         AddChild(_hurtArea);
 
         
-        var alertCollider = new CollisionShape2D();
-        var alertBoxShape = new CircleShape2D();
+        CollisionShape2D alertCollider = new CollisionShape2D();
+        CircleShape2D alertBoxShape = new CircleShape2D();
         _alertArea.Name = "AlertCircle";
         _alertArea.SetCollisionMaskBit(19, true);
         _alertArea.SetCollisionMaskBit(0, false);
@@ -114,7 +114,7 @@ public abstract class Enemy : Entity{
         if (_moveTarget != _moveTargetNone){
             velocity = (velocity + Position.DirectionTo(_moveTarget) * Acceleration * delta).Clamped(MaxVelocity * delta);
             sprite.FlipH = velocity.x < 0;
-            var result = MoveAndCollide(velocity);
+            KinematicCollision2D result = MoveAndCollide(velocity);
             if (IsInstanceValid(result)){
                 MoveAndCollide(result.Normal.Slide(velocity));
                 _moveTarget = _moveTargetNone;

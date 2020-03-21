@@ -6,9 +6,7 @@ public class BlastWave : AbilityBase
 
     public BlastWave() : base(){}
 
-    public BlastWave(Vector2 _direction, Vector2 _pos, int _targetLayer) : base(_direction, _pos, _targetLayer: _targetLayer){
-
-        
+    public BlastWave(Vector2 direction, Vector2 pos, int targetLayer) : base(direction, pos, targetLayer){
     }
 
     public override void _PhysicsProcess(float delta){

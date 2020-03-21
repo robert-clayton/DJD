@@ -106,8 +106,8 @@ public class ChainLightning : AbilityBase
 
         // loop through emitters and update values
         for (int idx = 0; idx < sets.Count; idx++){
-            var from = idx == 0? startingPosition : sets[idx-1].entity.Position;
-            var to = sets[idx].entity.Position;
+            Vector2 from = idx == 0? startingPosition : sets[idx-1].entity.Position;
+            Vector2 to = sets[idx].entity.Position;
 
             ParticlesMaterial material = sets[idx].chainEmitter.ProcessMaterial as ParticlesMaterial;
             material.EmissionBoxExtents = new Vector3(from.DistanceTo(to) / 2, 0, 0);
@@ -128,20 +128,5 @@ public class ChainLightning : AbilityBase
         crackleEmitter.SpeedScale = 2f;
         crackleEmitter.Position = pos;
         return crackleEmitter;
-    }
-
-    public override void _PhysicsProcess(float delta){
-    //     var toDelete = new List<(Particles2D, Particles2D, Light2D, Timer)>();
-    //     foreach ((Particles2D chainEmitter, Particles2D crackleEmitter, Light2D light, Timer timer) set in particleSets){
-    //         if (set.timer.TimeLeft / set.timer.WaitTime < .1f)
-    //             toDelete.Add(set);
-    //     }
-    //     foreach((Particles2D chainEmitter, Particles2D crackleEmitter, Light2D light, Timer timer) set in toDelete){
-    //         particleSets.Remove(set);
-    //         set.chainEmitter.QueueFree();
-    //         set.crackleEmitter.QueueFree();
-    //         set.light.QueueFree();
-    //     }
-    //     if (toDelete.Count > particleSets.Count) QueueFree();
     }
 }

@@ -9,7 +9,7 @@ public class Game : Node2D{
 
     private Floor _floor;
     private Player _player;
-    public List<Wave> WaveDefinitions { get; protected set; }= new List<Wave>();
+    public List<Wave> WaveDefinitions { get; }= new List<Wave>();
     public int CurrentWave {get; protected set; } = 0;
     private AudioStreamPlayer _bgm;
     private Random _rng = new Random();
@@ -29,12 +29,12 @@ public class Game : Node2D{
             fireSlime = Spawn<SlimeFire>(),
             golem = Spawn<Golem>();
 
-        var waveOne = new Wave {(slime, 5)};
-        var waveTwo = new Wave {(slime, 15), (fireSlime, 3)};
-        var waveThree = new Wave {(slime, 20), (fireSlime, 5)};
-        var waveFour = new Wave {(slime, 30), (fireSlime, 15)};
-        var waveFive = new Wave {(slime, 30), (fireSlime, 30)};
-        var waveSix = new Wave {(golem, 1)};
+        Wave waveOne = new Wave {(slime, 5)};
+        Wave waveTwo = new Wave {(slime, 15), (fireSlime, 3)};
+        Wave waveThree = new Wave {(slime, 20), (fireSlime, 5)};
+        Wave waveFour = new Wave {(slime, 30), (fireSlime, 15)};
+        Wave waveFive = new Wave {(slime, 30), (fireSlime, 30)};
+        Wave waveSix = new Wave {(golem, 1)};
 
         WaveDefinitions.Add(waveOne);
         WaveDefinitions.Add(waveTwo);
@@ -65,13 +65,14 @@ public class Game : Node2D{
 
     public void CreateNewGates(int wave = 0){
         Wave waveDefinition = WaveDefinitions[wave];
-        var spawnedEntities = SpawnEntitiesFromDefinition(waveDefinition);
-        var randomizedEntities = RandomizeList(spawnedEntities);
-        var gatesEntities = SplitEntityList(randomizedEntities);
+        List<Entity> spawnedEntities = SpawnEntitiesFromDefinition(waveDefinition);
+        List<Entity> randomizedEntities = RandomizeList(spawnedEntities);
+        List<List<Entity>> gatesEntities = SplitEntityList(randomizedEntities);
         for (int idx = 0; idx < gatesEntities.Count; idx++){
-            Gate newGate = new Gate();
-            newGate.Position = _floor.GetRandomSpawnLocation();
-            newGate.EntitiesToSpawn = gatesEntities[idx];
+            Gate newGate = new Gate(){
+                Position = _floor.GetRandomSpawnLocation(),
+                EntitiesToSpawn = gatesEntities[idx]
+            };
             newGate.Init();
             GetTree().Root.CallDeferred("add_child", newGate);
             Gates.Add(newGate);
@@ -82,7 +83,7 @@ public class Game : Node2D{
     }
 
     public List<List<Entity>> SplitEntityList(List<Entity> list, int splits = 2){
-        var splitList = new List<List<Entity>>();
+        List<List<Entity>> splitList = new List<List<Entity>>();
         int chunkSize = list.Count / splits;
         int leftover = list.Count % splits;
         int c = 0;
@@ -97,22 +98,20 @@ public class Game : Node2D{
     }
 
     public List<Entity> SpawnEntitiesFromDefinition(Wave wave){
-        var entityList = new List<Entity>();
-        foreach (var (constructEnemy, count) in wave){
-            for (int idx = 0; idx < count; idx++){
-                // entityList.Add(Activator.CreateInstance(definition.enemyType, Position, _floor.areaStart, _floor.areaEnd) as Entity);
+        List<Entity> entityList = new List<Entity>();
+        foreach ((System.Func<Godot.Vector2, Enemy> constructEnemy, int count) in wave){
+            for (int idx = 0; idx < count; idx++)
                 entityList.Add(constructEnemy(Position));
-            }
         }
         return entityList;
     }
 
     public List<Entity> RandomizeList(List<Entity> list){
-        var count = list.Count;
-        var last = count - 1;
-        for (var i = 0; i < last; ++i) {
-            var r = _rng.Next(i + 1);
-            var tmp = list[i];
+        int count = list.Count;
+        int last = count - 1;
+        for (int i = 0; i < last; ++i) {
+            int r = _rng.Next(i + 1);
+            Entity tmp = list[i];
             list[i] = list[r];
             list[r] = tmp;
         }
@@ -135,7 +134,7 @@ public class Game : Node2D{
         if (CurrentWave < WaveDefinitions.Count - 1)
             CreateNewGates(++CurrentWave);
         else {
-            var boss = new Golem();
+            Golem boss = new Golem();
             boss.Initialize((_floor.areaStart + _floor.areaEnd) / 2);
             GetTree().Root.AddChild(boss);
         }
@@ -149,7 +148,7 @@ public class Game : Node2D{
         _player.Initialize((_floor.areaStart + _floor.areaEnd) / 2);
         _player.Connect("Dead", this, "Reset");
         CurrentWave = 0;
-        GetTree().Root.AddChild(_player);
+        GetTree().Root.CallDeferred("add_child", _player);
 
         foreach (Gate gate in Gates) if (IsInstanceValid(gate)) gate.QueueFree();
         Gates = new List<Gate>();
@@ -188,7 +187,7 @@ public class Game : Node2D{
             
             Vector2 pos = new Vector2();
 
-            foreach (var entry in currentLine){
+            foreach (KeyValuePair<object, object> entry in currentLine){
                 string key = entry.Key.ToString();
                 if (key == "PosX"){
                     pos.x = (float)entry.Value;

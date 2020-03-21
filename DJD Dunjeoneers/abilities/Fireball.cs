@@ -1,8 +1,7 @@
 using Godot;
 using System;
 
-public class Fireball : AbilityBase
-{
+public class Fireball : ProjectileBase{
     private bool exploded = false;
     private Particles2D explosionEmitter = new Particles2D();
     private Particles2D smokeTrailEmitter = new Particles2D();
@@ -16,16 +15,15 @@ public class Fireball : AbilityBase
     protected Light2D light = new Light2D();
     private Area2D hitArea = new Area2D();
     public Tween onHitTween = new Tween();
-    private Timer timeLimit = new Timer();
 
     public Fireball() : base(){}
 
-    public Fireball(Vector2 _direction, Vector2 _pos, int _targetLayer) : base(_direction, _pos, _targetLayer){
+    public Fireball(Vector2 direction, Vector2 position, int targetLayer) : base(direction, position, targetLayer){
         damage = 100f;
         knockbackStrength = 50f;
-        maxVelocity = 150;
-        acceleration = 200;
+        Acceleration = 200;
         effectRadius = 30f;
+        LifetimeTotal = 1f;
 
         Texture gradient = ResourceLoader.Load("res://assets/gradients/radial.png") as Texture;
         light.Texture = gradient;
@@ -37,13 +35,15 @@ public class Fireball : AbilityBase
         onScreenNotifier.Connect("screen_exited", this, "queue_free");
         AddChild(onScreenNotifier);
 
-        Position = Position + direction * 10f;
+        Position = Position + Direction * 10f;
 
         // Sprite
         sprite.Texture = spriteImage;
         AddChild(sprite);
 
         // Collider
+        hitArea.CollisionLayer = 0;
+        hitArea.SetCollisionMaskBit(0, false);
         hitArea.SetCollisionMaskBit(targetLayer, true);
         AddChild(hitArea);
         CollisionShape2D shape = new CollisionShape2D();
@@ -80,9 +80,9 @@ public class Fireball : AbilityBase
         AddChild(fireTrailEmitter);
 
         // Timers
-        var targetColor =  new Color(light.Color.r, light.Color.g, light.Color.b, light.Color.a*2);
-        var targetColorNone = new Color(light.Color.r, light.Color.g, light.Color.b, 0);
-        var targetScale = light.Scale * 3 * Mathf.Clamp((float)new Random().NextDouble(), .5f, 1f);
+        Color targetColor =  new Color(light.Color.r, light.Color.g, light.Color.b, light.Color.a*2);
+        Color targetColorNone = new Color(light.Color.r, light.Color.g, light.Color.b, 0);
+        Vector2 targetScale = light.Scale * 3 * Mathf.Clamp((float)new Random().NextDouble(), .5f, 1f);
         onHitTween.InterpolateProperty(light, "color", light.Color, targetColor, .2f, easeType: Tween.EaseType.Out);
         onHitTween.InterpolateProperty(light, "color", targetColor, targetColorNone, .1f, easeType: Tween.EaseType.Out, delay: .2f);
         onHitTween.InterpolateProperty(light, "scale", light.Scale, targetScale, .1f);
@@ -90,42 +90,42 @@ public class Fireball : AbilityBase
         onHitTween.InterpolateCallback(this, 1f,"queue_free");
         AddChild(onHitTween);
 
-        timeLimit.WaitTime = 1f;
-        timeLimit.OneShot = true;
-        timeLimit.Connect("timeout", this, nameof(Explode));
-        AddChild(timeLimit);
+        lifetime.Connect("timeout", this, nameof(Explode));
     }
 
     public override void _Ready(){
-        Rotate(GetAngleTo(Position + direction));
-        timeLimit.Start();
+        base._Ready();
+        Rotate(GetAngleTo(Position + Direction));
     }
 
     public override void _PhysicsProcess(float delta){
         if (!exploded){
-            velocity = Mathf.Min(velocity + acceleration * delta, maxVelocity);
-            Translate(direction * velocity * delta);
+            base._PhysicsProcess(delta);
+            Velocity = AccelerateLogarithmic(Velocity);
+            Translate(Velocity * delta);
             ZIndex = Mathf.FloorToInt(Position.y);
         }
     }
 
     public virtual void _OnHurtAreaEnter(Area2D _ = null){
-        Explode();
+        if (!exploded) Explode();
     }
 
     public virtual void Explode(){
+        lifetime.Disconnect("timeout", this, nameof(Explode));
+        exploded = true;
         onHitTween.Start();
         fireTrailEmitter.Emitting = false;
         smokeTrailEmitter.Emitting = false;
         smokeTrailEmitter.Scale = default(Vector2);
-        explosionMaterial.Gravity = new Vector3(velocity/2, 0f, 0f);
+        explosionMaterial.Gravity = new Vector3(Velocity.Length()/2, 0f, 0f);
         explosionEmitter.Emitting = true;
-        exploded = true;
         sprite.Visible = false;
-        hitArea.CollisionLayer = 0;
-        hitArea.CollisionMask = 0;
-        
-        // Affect target(s)
+        hitArea.QueueFree();
+        DamageNearby();
+    }
+
+    public virtual void DamageNearby(){
         foreach (Enemy target in GetTree().GetNodesInGroup("Enemies")){
             if (Position.DistanceTo(target.Position) < effectRadius)
                 target.Damage(damage, GlobalPosition.DirectionTo(target.GlobalPosition) * knockbackStrength);

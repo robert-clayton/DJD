@@ -2,24 +2,51 @@ using Godot;
 using System;
 
 public abstract class AbilityBase : Node2D{
-    protected Vector2 direction = default(Vector2);
-    protected Vector2 position = default(Vector2);
+    public Vector2 Velocity {get; set;} = new Vector2();
+    public Vector2 InitialVelocity {get; set;} = new Vector2();
+    public Vector2 Direction {get; set;} = new Vector2();
+    public float LifetimePercent {
+        get{
+            if (IsInstanceValid(lifetime) && lifetime.WaitTime > 0f)
+                return 1 - lifetime.TimeLeft / lifetime.WaitTime;
+            return 0f;
+        }
+    }
+    public float LifetimeTotal {
+        get { return lifetime.WaitTime; }
+        set { lifetime.WaitTime = value; }
+    }
+
+    public float Acceleration {get; set;} = 100f;
+    public Timer lifetime = new Timer();
     protected int targetLayer = -1;
     protected float knockbackStrength = 50f;
     protected int maxPierces = 0;
     protected int pierces = 0;
     protected float damage = 25f;
-    protected float velocity = 30f;
-    protected float maxVelocity = 100f;
-    protected float acceleration = 30f;
     protected float effectRadius = 0f;
     public float cooldown = 0.5f;
 
     public AbilityBase(){}
 
-    public AbilityBase(Vector2 _direction, Vector2 _position, int _targetLayer){
-        direction = _direction;
-        Position = _position;
-        targetLayer = _targetLayer;
+    public AbilityBase(Vector2 direction, Vector2 position, int targetLayer){
+        lifetime.OneShot = true;
+        lifetime.Autostart = true;
+
+        Direction = direction;
+        Position = position;
+        this.targetLayer = targetLayer;
+    }
+
+    public override void _Ready(){
+        AddChild(lifetime);
+    }
+
+    public Vector2 AccelerateExponential(Vector2 currentVelocity, int power = 2){
+        return currentVelocity + (Direction * Mathf.Pow(LifetimePercent, power) * Acceleration);
+    }
+
+    public Vector2 AccelerateLogarithmic(Vector2 currentVelocity){
+        return currentVelocity + Direction * Mathf.Log(1 + LifetimePercent * Acceleration);
     }
 }

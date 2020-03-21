@@ -12,20 +12,20 @@ public class Gate : Node2D{
     public bool ActivateOnReady {get; set;} = false;
     public int TotalValue {
         get{
-            var total = 0;
+            int total = 0;
             foreach (Entity entity in EntitiesToSpawn) total += entity.DeathValue;
             foreach (Entity entity in EntitiesActive) total += entity.DeathValue;
             foreach (Entity entity in EntitiesKilled) total += entity.DeathValue;
             return total;
         }}
     public int StoredValue {get{
-            var total = 0;
+            int total = 0;
             foreach (Entity entity in EntitiesToSpawn) total += entity.DeathValue;
             foreach (Entity entity in EntitiesActive) total += entity.DeathValue;
             return total;
         }}
     public int CurrentValue {get{
-        var total = 0;
+        int total = 0;
         foreach (Entity entity in EntitiesKilled) total += entity.DeathValue;
         return total;
     }}
@@ -75,7 +75,7 @@ public class Gate : Node2D{
 
     private void CheckToSpawn(){
         if (EntitiesToSpawn.Count > 0){
-            var entity = EntitiesToSpawn[0];
+            Entity entity = EntitiesToSpawn[0];
             GetTree().Root.AddChild(entity);
             entity.Position = GlobalPosition;
             entity.Connect("Dead", this, "OnEntityDead");

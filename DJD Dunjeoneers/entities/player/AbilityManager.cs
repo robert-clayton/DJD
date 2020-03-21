@@ -9,6 +9,7 @@ public enum EAbilities{
 
 public class AbilityManager : Node{
     public Timer cooldown = new Timer();
+    public Player Player {get; set;}
 
     public AbilityManager(){
         AddChild(cooldown);
@@ -34,6 +35,7 @@ public class AbilityManager : Node{
             }
             cooldown.WaitTime = newAbility.cooldown;
             cooldown.Start();
+            newAbility.InitialVelocity = Player.velocity;
             AddChild(newAbility);
         }
     }
