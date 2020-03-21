@@ -4,7 +4,7 @@ ver 0.0.5
 
 ![Red Gates](https://i.imgur.com/dBjDcBq.png)
 
-0.1.0 To-Do list:
+v0.1.0-alpha To-Do list:
 - Ability swapping
 - Player hud
 - One more enemy type (necro, summons skeles)
@@ -13,7 +13,7 @@ ver 0.0.5
 
 # Changelog
 
-v0.0.5
+v0.0.5-alpha
 - Rewrote player motion physics
 - Added jousting to projectile abilities
 
