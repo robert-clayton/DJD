@@ -16,6 +16,7 @@ public class Fireball : AbilityBase
     protected Light2D light = new Light2D();
     private Area2D hitArea = new Area2D();
     public Tween onHitTween = new Tween();
+    private Timer timeLimit = new Timer();
 
     public Fireball() : base(){}
 
@@ -23,7 +24,7 @@ public class Fireball : AbilityBase
         damage = 100f;
         knockbackStrength = 50f;
         maxVelocity = 150;
-        acceleration = 30;
+        acceleration = 200;
         effectRadius = 30f;
 
         Texture gradient = ResourceLoader.Load("res://assets/gradients/radial.png") as Texture;
@@ -88,21 +89,31 @@ public class Fireball : AbilityBase
         onHitTween.InterpolateProperty(explosionMaterial, "gravity", explosionMaterial.Gravity, default(Vector3), 0.1f, delay: .2f);
         onHitTween.InterpolateCallback(this, 1f,"queue_free");
         AddChild(onHitTween);
+
+        timeLimit.WaitTime = 1f;
+        timeLimit.OneShot = true;
+        timeLimit.Connect("timeout", this, nameof(Explode));
+        AddChild(timeLimit);
     }
 
     public override void _Ready(){
         Rotate(GetAngleTo(Position + direction));
+        timeLimit.Start();
     }
 
     public override void _PhysicsProcess(float delta){
         if (!exploded){
-            velocity = Mathf.Min(velocity + acceleration, maxVelocity);
+            velocity = Mathf.Min(velocity + acceleration * delta, maxVelocity);
             Translate(direction * velocity * delta);
             ZIndex = Mathf.FloorToInt(Position.y);
         }
     }
 
-    public virtual void _OnHurtAreaEnter(Area2D hurtArea){
+    public virtual void _OnHurtAreaEnter(Area2D _ = null){
+        Explode();
+    }
+
+    public virtual void Explode(){
         onHitTween.Start();
         fireTrailEmitter.Emitting = false;
         smokeTrailEmitter.Emitting = false;
