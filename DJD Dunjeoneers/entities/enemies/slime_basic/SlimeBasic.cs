@@ -2,16 +2,16 @@ using Godot;
 using System;
 
 public class SlimeBasic : Enemy{
-    public SlimeBasic()
-    {
-        maxEnergy = 100f;
-        curEnergy = 100f;
-        maxHealth = 100f;
-        curHealth = 100f;
+    public SlimeBasic() : base(){}
+
+    public override void Initialize(Vector2 position, int size = 8){
+        base.Initialize(position, size: size);
+        MaxHealth = 100f;
+        CurHealth = 100f;
         knockbackCutoff = 4f;
         knockbackDeceleration = 5f;
-        acceleration = 4f;
-        maxVelocity = 25f;
+        Acceleration = 4f;
+        MaxVelocity = 25f;
 
         // Children
         sprite.Frames = ResourceLoader.Load("res://entities/enemies/slime_basic/SlimeBasic.tres") as SpriteFrames;

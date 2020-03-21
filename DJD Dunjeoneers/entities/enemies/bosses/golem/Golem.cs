@@ -15,11 +15,14 @@ public class Golem : Boss{
     ParticlesMaterial mat = ResourceLoader.Load("res://entities/enemies/bosses/golem/overload_vent.tres") as ParticlesMaterial;
     AudioStreamPlayer findTargetSfx = new AudioStreamPlayer();
 
-    public Golem() {
+    public Golem(): base(){}
+
+    public override void Initialize(Vector2 position, int size=24){
+        base.Initialize(position, size: size);
         findTargetSfx.Stream = ResourceLoader.Load("res://assets/audio/boss_golem_find_target.wav") as AudioStreamSample;
         sprite.Frames = ResourceLoader.Load("res://entities/enemies/bosses/golem/Golem.tres") as SpriteFrames;
         ChangeState(EEnemyState.STATE_IDLE);
-        maxVelocity = 40f;
+        MaxVelocity = 40f;
 
         // Overload material setup
         vent.ProcessMaterial = mat;
@@ -112,13 +115,13 @@ public class Golem : Boss{
         if (playerList.Count > 0){
             Player player = playerList[0] as Player;
             var lurchTime = 1f;
-            if (Position.DistanceTo(player.GlobalPosition) > lurchTime * maxVelocity){
+            if (Position.DistanceTo(player.GlobalPosition) > lurchTime * MaxVelocity){
                 lurchDirection = Position.DirectionTo(player.GlobalPosition);
-                lurchTarget = Position + lurchDirection * maxVelocity;
+                lurchTarget = Position + lurchDirection * MaxVelocity;
             } else {
                 lurchDirection = Position.DirectionTo(player.GlobalPosition);
                 lurchTarget = player.GlobalPosition;
-                lurchTime *= GlobalPosition.DistanceTo(lurchTarget) / maxVelocity;
+                lurchTime *= GlobalPosition.DistanceTo(lurchTarget) / MaxVelocity;
             }
             sprite.FlipH = lurchDirection.x < 0;
             tween.Remove(this, "global_position");

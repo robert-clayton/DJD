@@ -9,9 +9,6 @@ public abstract class Enemy : Entity{
         STATE_DYING,
         STATE_ALERTED,
     }
-
-    public Vector2 moveAreaStart;
-    public Vector2 moveAreaEnd;
     protected Vector2 _moveTargetNone = new Vector2(-100000, -10000);
     protected Vector2 _moveTarget = new Vector2(-100000, -10000);
     [Export] public EEnemyState _state = EEnemyState.STATE_IDLE;
@@ -20,17 +17,12 @@ public abstract class Enemy : Entity{
     protected Area2D _alertArea = new Area2D();
     protected float _touchDamage = 25f;
 
-    protected Enemy(int size = 8) : base(size){}
+    protected Enemy() : base(){}
 
-    public virtual void Initialize(Vector2 _position, Vector2 _moveAreaStart, Vector2 _moveAreaEnd)
-    {
+    public override void Initialize(Vector2 position, int size = 8){
+        base.Initialize(Position, size: size);
         SetCollisionMaskBit(1, true);
         CollisionLayer = 0;
-
-        Position = _position;
-        moveAreaStart = _moveAreaStart;
-        moveAreaEnd = _moveAreaEnd;
-        
         var hurtCollider = new CollisionShape2D();
         var hurtBoxShape = new RectangleShape2D();
         _hurtArea.SetCollisionLayerBit(0, false);
@@ -38,7 +30,7 @@ public abstract class Enemy : Entity{
         _hurtArea.SetCollisionMaskBit(19, true);
         _hurtArea.SetCollisionMaskBit(0, false);
         _hurtArea.Name = "HurtBox";
-        hurtBoxShape.Extents = new Vector2(size/2, size/2);
+        hurtBoxShape.Extents = new Vector2(size/2f, size/2f);
         hurtCollider.Shape = hurtBoxShape;
         _hurtArea.AddChild(hurtCollider);
         AddChild(_hurtArea);
@@ -71,7 +63,7 @@ public abstract class Enemy : Entity{
     protected virtual void _OnEnemySfxPaused(bool paused){}
 
     public override void Damage(float damage, Vector2 knockback = default(Vector2)){
-        if (curHealth == 0) return;
+        if (CurHealth == 0) return;
         base.Damage(damage, knockback);
         GetParent().GetNode("Game").GetNode<Camera>("Camera").ShakeFromDamage(2f);
 
@@ -82,7 +74,7 @@ public abstract class Enemy : Entity{
         }
     }
 
-    public override void PrepareDeath(){
+    protected override void PrepareDeath(){
         base.PrepareDeath();
         ChangeState(EEnemyState.STATE_DYING);
         RemoveFromGroup("Enemies");
@@ -103,19 +95,12 @@ public abstract class Enemy : Entity{
         }
     }
 
-    public Vector2 RandomPointInMovableArea(bool force = false){
-        return new Vector2(
-            rng.Next((int)moveAreaStart.x, (int)moveAreaEnd.x), 
-            rng.Next((int)moveAreaStart.y, (int)moveAreaEnd.y)
-        );
-    }
-
     public override void _Process(float delta){
         base._Process(delta);
-        if (curHealth < 0)
+        if (CurHealth < 0)
             PrepareDeath();
         else if (_moveTarget == _moveTargetNone){
-            _moveTarget = RandomPointInMovableArea();
+            _moveTarget = Position + RandomDirection() * MaxVelocity * 5f;
             ChangeState(EEnemyState.STATE_MOVING);
         } else if (_state == EEnemyState.STATE_ALERTED){
             if (IsInstanceValid(_player)) _moveTarget = _player.Position;
@@ -127,7 +112,7 @@ public abstract class Enemy : Entity{
         base._PhysicsProcess(delta);
         if (_state == EEnemyState.STATE_IDLE || _state == EEnemyState.STATE_STUNNED || _state == EEnemyState.STATE_DYING) return;
         if (_moveTarget != _moveTargetNone){
-            velocity = (velocity + Position.DirectionTo(_moveTarget) * acceleration * delta).Clamped(maxVelocity * delta);
+            velocity = (velocity + Position.DirectionTo(_moveTarget) * Acceleration * delta).Clamped(MaxVelocity * delta);
             sprite.FlipH = velocity.x < 0;
             var result = MoveAndCollide(velocity);
             if (IsInstanceValid(result)){

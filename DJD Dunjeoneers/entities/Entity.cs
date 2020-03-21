@@ -4,19 +4,61 @@ using System;
 public abstract class Entity : KinematicBody2D{
     [Signal] public delegate float HealthChanged();
     [Signal] public delegate float EnergyChanged();
-    [Signal] public delegate void Dead();
+    [Signal] public delegate Entity Dead();
 
-    // Declare member variables here. Examples:
-    [Export] public float acceleration = 45;
-    [Export] public float maxVelocity = 90;
+
+    public bool IsAlive {
+        get{ return CurHealth > 0; }
+        set{
+            if (CurHealth > 0 == value) return;
+            if (CurHealth > 0 && !value){
+                CurHealth = 0;
+                EmitSignal(nameof(Dead), this);
+                PrepareDeath();
+            }
+            else CurHealth = 1f;
+        }
+    }
+    public float MaxHealth {
+        get{ return _maxHealth; } 
+        set{
+            _maxHealth = value;
+            healthBar.MaxValue = value;
+        }
+    }
+    public float CurHealth {
+        get{ return _curHealth; } 
+        set{
+            _curHealth = value;
+            healthBar.Value = value;
+            if (_curHealth < MaxHealth) healthBar.Show();
+            EmitSignal(nameof(HealthChanged), _curHealth);
+            if (!IsAlive){
+                EmitSignal(nameof(Dead), this);
+                PrepareDeath();
+            }
+        }
+    }
+    public float MaxEnergy {get; set;} = 100f;
+    public float CurEnergy {
+        get{ return _curEnergy; }
+        set{
+            _curEnergy = value;
+            EmitSignal(nameof(EnergyChanged), _curEnergy);
+        }
+    }
+    public float Acceleration {get; set;} = 45f;
+    public float MaxVelocity {get; set;} = 90f;
+    public int DeathValue { get; protected set; } = 1;
+
+    private float _curHealth = 100f;
+    private float _maxHealth = 100f;
+    private float _curEnergy = 100f;
+
     public Vector2 velocity = new Vector2();
     public AnimatedSprite sprite = new AnimatedSprite();
     public Sprite shadow = new Sprite();
-    
-    [Export] public float maxEnergy = 100f;
-    [Export] public float maxHealth = 100f;
-    [Export] public float curEnergy = 100f;
-    [Export] public float curHealth = 100f;
+
     protected float knockbackDeceleration = 5f;
     protected float knockbackCutoff = 4f;
     protected Vector2 knockbackVelocity = new Vector2();
@@ -29,11 +71,11 @@ public abstract class Entity : KinematicBody2D{
 
     protected int size;
 
-    protected Entity(int size = 8)
-    {
+    public virtual void Initialize(Vector2 position, int size = 8){
+        Position = position;
         this.size = size;
         deathTween.InterpolateProperty(this, "modulate", new Color(1f, 1f, 1f, 1f), new Color(1f, 1f, 1f, 0f), 1);
-        deathTween.InterpolateCallback(this, 1, "Die");
+        deathTween.InterpolateCallback(this, 1, nameof(Die));
         AddChild(deathTween);
         var moveShape = new RectangleShape2D();
         moveCollider.Shape = moveShape;
@@ -87,8 +129,6 @@ public abstract class Entity : KinematicBody2D{
     }
 
     public override void _Ready(){
-        healthBar.MaxValue = maxHealth;
-        healthBar.Value = curHealth;
         globals = GetTree().Root.GetNode("Globals") as Globals;
     }
 
@@ -111,7 +151,7 @@ public abstract class Entity : KinematicBody2D{
         }
     }
 
-    public virtual void PrepareDeath(){
+    protected virtual void PrepareDeath(){
         sprite.Stop();
         moveCollider.QueueFree();
         CollisionMask = 0;
@@ -119,27 +159,22 @@ public abstract class Entity : KinematicBody2D{
         deathTween.Start();
     }
 
-    public virtual void Die(){
-        EmitSignal("Dead");
+    protected virtual void Die(){
         QueueFree();
     }
 
     public virtual void Damage(float damage, Vector2 knockback = new Vector2()){
-        curHealth = Mathf.Max(curHealth - damage, 0);
-        healthBar.Value = curHealth;
+        CurHealth = Mathf.Max(CurHealth - damage, 0);
         knockbackVelocity += knockback * (1 - knockbackResistance);
-        if (curHealth <= 0) PrepareDeath();
-        if (curHealth < maxHealth) healthBar.Show();
-        EmitSignal(nameof(HealthChanged), curHealth);
     }
 
-    public virtual void SlowDown(){
+    protected virtual void SlowDown(){
         velocity = velocity.LinearInterpolate(new Vector2(0,0), .2f);
         if (velocity.DistanceTo(new Vector2(0,0)) < 0.1f)
             velocity = new Vector2(0,0);
     }
 
-    public Vector2 RandomDirection(){
+    protected Vector2 RandomDirection(){
         return new Vector2((float)rng.NextDouble() * 2 - 1, (float)rng.NextDouble() * 2 - 1);
     }
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://entities/enemies/Enemy.cs" type="Script" id=1]
-[ext_resource path="res://entities/enemies/bosses/golem/Golem.tres" type="SpriteFrames" id=2]
+[ext_resource path="res://entities/gates/Gate.tres" type="SpriteFrames" id=2]
 [ext_resource path="res://assets/sprites/shadow.png" type="Texture" id=3]
 [ext_resource path="res://entities/enemies/bosses/golem/overload_vent.tres" type="Material" id=4]
 [ext_resource path="res://assets/gradients/GreenGradient_12.tres" type="Texture" id=5]
@@ -28,7 +28,8 @@ texture = ExtResource( 3 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 2 )
-frame = 2
+frame = 5
+playing = true
 
 [node name="Sprite" type="Sprite" parent="."]
 visible = false
@@ -55,6 +56,7 @@ visible = false
 shape = SubResource( 3 )
 
 [node name="Area2D" type="Area2D" parent="."]
+visible = false
 
 [node name="Particles2D" type="Particles2D" parent="Area2D"]
 amount = 500

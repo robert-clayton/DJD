@@ -14,21 +14,20 @@ public class Player : Entity{
     [Export] public EPlayerState state = EPlayerState.STATE_IDLE;
     [Export] public EAbilities primary = EAbilities.FIREBALL;
     [Export] public EAbilities secondary = EAbilities.CHAIN_LIGHTNING;
-    private Light2D light = new Light2D();
-    private Vector2 baseLightScale = new Vector2(.5f, .5f);
-    private bool usePrimary = false;
-    private bool useSecondary = false;
-    private Tween lightTween = new Tween();
+    private Light2D _light = new Light2D();
+    private Vector2 _baseLightScale = new Vector2(.5f, .5f);
+    private bool _usePrimary = false;
+    private bool _useSecondary = false;
+    private Tween _lightTween = new Tween();
 
     public Player() : base(){}
 
-    public Player(Vector2 pos) : base(){
-        maxHealth = curHealth = 100f;
+    public void Initialize(Vector2 position){
+        base.Initialize(position);
         SetCollisionMaskBit(1, true);
         sprite.Frames = ResourceLoader.Load("res://entities/player/Player.tres") as SpriteFrames;
         sprite.Play("default");
         ChangeState(state);
-        Position = pos;
 
         var hurtArea = new Area2D();
         var hurtCollider = new CollisionShape2D();
@@ -40,16 +39,16 @@ public class Player : Entity{
         hurtBoxShape.Extents = new Vector2(2f, 4f);
         hurtCollider.Shape = hurtBoxShape;
         hurtArea.AddChild(hurtCollider);
-        hurtArea.Connect("body_entered", this, "_OnTouchedByEnemy");
+        hurtArea.Connect("body_entered", this, "OnTouchedByEnemy");
         AddChild(hurtArea);
 
         Texture gradient = ResourceLoader.Load("res://assets/gradients/radial.png") as Texture;
-        light.Texture = gradient;
-        light.Scale = baseLightScale;
-        light.Color = new Color(1f, 1f, 1f, .3f);
-        AddChild(light);
+        _light.Texture = gradient;
+        _light.Scale = _baseLightScale;
+        _light.Color = new Color(1f, 1f, 1f, .3f);
+        AddChild(_light);
 
-        AddChild(lightTween);
+        AddChild(_lightTween);
 
         AddToGroup("Players");
     }
@@ -61,9 +60,9 @@ public class Player : Entity{
     public override void _Process(float delta){
         base._Process(delta);
         if (state == EPlayerState.STATE_DYING || state == EPlayerState.STATE_STUNNED || state == EPlayerState.STATE_DODGING) return;
-        if (usePrimary)
+        if (_usePrimary)
             abilityManager.Invoke(primary, GlobalPosition.DirectionTo(GetGlobalMousePosition()), GlobalPosition, 2);
-        if (useSecondary)
+        if (_useSecondary)
             abilityManager.Invoke(secondary, GlobalPosition.DirectionTo(GetGlobalMousePosition()), GlobalPosition, 2);
     }
 
@@ -76,14 +75,14 @@ public class Player : Entity{
         );
         if (motion.Length() == 0){
             SlowDown();
-        } else velocity = (velocity + motion.Normalized() * acceleration * delta).Clamped(maxVelocity * delta);
+        } else velocity = (velocity + motion.Normalized() * Acceleration * delta).Clamped(MaxVelocity * delta);
         KinematicCollision2D result = MoveAndCollide(velocity);
         if (IsInstanceValid(result)) MoveAndCollide(result.Normal.Slide(motion));
     }
 
     public override void _UnhandledInput(InputEvent @event){
-        usePrimary = Input.IsActionPressed("attack_primary");
-        useSecondary = Input.IsActionPressed("attack_secondary");
+        _usePrimary = Input.IsActionPressed("attack_primary");
+        _useSecondary = Input.IsActionPressed("attack_secondary");
 
         if (Input.IsActionJustPressed("move_right") && !Input.IsActionPressed("move_left"))
             sprite.FlipH = false;
@@ -101,32 +100,32 @@ public class Player : Entity{
             } else ChangeState(EPlayerState.STATE_IDLE);
     }
 
-    private void _OnTouchedByEnemy(Enemy enemy){
-        Damage(maxHealth/4f, Position.DirectionTo(enemy.Position) * -100f);
+    private void OnTouchedByEnemy(Enemy enemy){
+        Damage(MaxHealth/4f, Position.DirectionTo(enemy.Position) * -100f);
     }
 
     public override void Damage(float damage, Vector2 knockback = default(Vector2)){
-        if (curHealth == 0) return;
+        if (CurHealth == 0) return;
         base.Damage(damage, knockback);
-        float healthPercent = curHealth / maxHealth;        
-        Vector2 newScale = baseLightScale * (float)(healthPercent * healthPercent * (3f - 2f * healthPercent) * .7 + .3);
-        lightTween.Stop(light, "scale");
-        lightTween.InterpolateProperty(light, "scale", light.Scale, newScale, .3f);
-        lightTween.Start();
+        float healthPercent = CurHealth / MaxHealth;        
+        Vector2 newScale = _baseLightScale * (float)(healthPercent * healthPercent * (3f - 2f * healthPercent) * .7 + .3);
+        _lightTween.Stop(_light, "scale");
+        _lightTween.InterpolateProperty(_light, "scale", _light.Scale, newScale, .3f);
+        _lightTween.Start();
     }
 
-    public override void PrepareDeath(){
+    protected override void PrepareDeath(){
         base.PrepareDeath();
         SetCollisionLayerBit(19, false);
         GetNode<Area2D>("HurtBox").QueueFree();
         ChangeState(EPlayerState.STATE_DYING);
     }
 
-    public override void Die(){
+    protected override void Die(){
         base.Die();
     }
 
-    public void ChangeState(EPlayerState newState){
+    protected void ChangeState(EPlayerState newState){
         if (state == EPlayerState.STATE_DYING) return;
         switch (newState){
             case EPlayerState.STATE_IDLE:

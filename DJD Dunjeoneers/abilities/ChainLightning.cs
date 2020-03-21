@@ -19,7 +19,7 @@ public class ChainLightning : AbilityBase
         jumpDelay.WaitTime = .1f;
         jumpDelay.OneShot = true;
         AddChild(jumpDelay);
-        jumpDelay.Connect("timeout", this, "Jump");
+        jumpDelay.Connect("timeout", this, nameof(Jump));
     }
 
     public override void _Ready(){
