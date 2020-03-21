@@ -27,7 +27,6 @@ public abstract class AbilityBase : Node2D{
     protected float effectRadius = 0f;
     public float cooldown = 0.5f;
 
-
     public AbilityBase(){}
 
     public AbilityBase(Vector2 direction, Vector2 position, int targetLayer){

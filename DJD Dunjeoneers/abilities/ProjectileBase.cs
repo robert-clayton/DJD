@@ -21,7 +21,8 @@ public abstract class ProjectileBase : AbilityBase{
     }
 
     public Vector2 MakeInitDecelerationTargetVector(){
-        GD.Print(Direction - InitialVelocity.Normalized());
-        return new Vector2();
+        float angle = Direction.AngleTo(InitialVelocity.Normalized());
+        float magnitude = Mathf.Max(0, Mathf.Cos(angle) * InitialVelocity.Length());
+        return magnitude * InitialVelocity.Normalized();
     }
 }
