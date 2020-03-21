@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="abilities\AbilityBase.cs" />
+    <Compile Include="abilities\ProjectileBase.cs" />
     <Compile Include="abilities\BlastWave.cs" />
     <Compile Include="abilities\ChainLightning.cs" />
     <Compile Include="abilities\Fireball.cs" />

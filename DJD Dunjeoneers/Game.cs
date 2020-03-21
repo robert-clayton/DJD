@@ -149,7 +149,7 @@ public class Game : Node2D{
         _player.Initialize((_floor.areaStart + _floor.areaEnd) / 2);
         _player.Connect("Dead", this, "Reset");
         CurrentWave = 0;
-        GetTree().Root.AddChild(_player);
+        GetTree().Root.CallDeferred("add_child", _player);
 
         foreach (Gate gate in Gates) if (IsInstanceValid(gate)) gate.QueueFree();
         Gates = new List<Gate>();

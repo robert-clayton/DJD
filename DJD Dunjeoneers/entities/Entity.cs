@@ -47,7 +47,7 @@ public abstract class Entity : KinematicBody2D{
             EmitSignal(nameof(EnergyChanged), _curEnergy);
         }
     }
-    public float Acceleration {get; set;} = 45f;
+    public float Acceleration {get; set;} = 180f;
     public float MaxVelocity {get; set;} = 90f;
     public int DeathValue { get; protected set; } = 1;
 
@@ -168,8 +168,8 @@ public abstract class Entity : KinematicBody2D{
         knockbackVelocity += knockback * (1 - knockbackResistance);
     }
 
-    protected virtual void SlowDown(){
-        velocity = velocity.LinearInterpolate(new Vector2(0,0), .2f);
+    protected virtual void SlowDown(float delta){
+        velocity = velocity.LinearInterpolate(new Vector2(0,0), delta);
         if (velocity.DistanceTo(new Vector2(0,0)) < 0.1f)
             velocity = new Vector2(0,0);
     }

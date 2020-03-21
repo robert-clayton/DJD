@@ -12,7 +12,7 @@ public class Player : Entity{
 
     private AbilityManager abilityManager = new AbilityManager();
     [Export] public EPlayerState state = EPlayerState.STATE_IDLE;
-    [Export] public EAbilities primary = EAbilities.FIREBALL;
+    [Export] public EAbilities primary = EAbilities.PYROBLAST;
     [Export] public EAbilities secondary = EAbilities.CHAIN_LIGHTNING;
     private Light2D _light = new Light2D();
     private Vector2 _baseLightScale = new Vector2(.5f, .5f);
@@ -24,6 +24,7 @@ public class Player : Entity{
 
     public void Initialize(Vector2 position){
         base.Initialize(position);
+        abilityManager.Player = this;
         SetCollisionMaskBit(1, true);
         sprite.Frames = ResourceLoader.Load("res://entities/player/Player.tres") as SpriteFrames;
         sprite.Play("default");
@@ -38,18 +39,19 @@ public class Player : Entity{
         hurtArea.Name = "HurtBox";
         hurtBoxShape.Extents = new Vector2(2f, 4f);
         hurtCollider.Shape = hurtBoxShape;
-        hurtArea.AddChild(hurtCollider);
+        
         hurtArea.Connect("body_entered", this, "OnTouchedByEnemy");
-        AddChild(hurtArea);
+        
 
         Texture gradient = ResourceLoader.Load("res://assets/gradients/radial.png") as Texture;
         _light.Texture = gradient;
         _light.Scale = _baseLightScale;
         _light.Color = new Color(1f, 1f, 1f, .3f);
+        
+        hurtArea.AddChild(hurtCollider);
+        AddChild(hurtArea);
         AddChild(_light);
-
         AddChild(_lightTween);
-
         AddToGroup("Players");
     }
 
@@ -69,15 +71,22 @@ public class Player : Entity{
     public override void _PhysicsProcess(float delta){
         base._PhysicsProcess(delta);
         if (state == EPlayerState.STATE_DYING || state == EPlayerState.STATE_STUNNED || state == EPlayerState.STATE_DODGING) return;
+        SlowDown(delta);
         Vector2 motion = new Vector2(
             Input.GetActionStrength("move_right") - Input.GetActionStrength("move_left"),
             Input.GetActionStrength("move_down") - Input.GetActionStrength("move_up")
         );
         if (motion.Length() == 0){
-            SlowDown();
-        } else velocity = (velocity + motion.Normalized() * Acceleration * delta).Clamped(MaxVelocity * delta);
-        KinematicCollision2D result = MoveAndCollide(velocity);
-        if (IsInstanceValid(result)) MoveAndCollide(result.Normal.Slide(motion));
+            
+        } else{
+            velocity = velocity + motion.Normalized() * Acceleration * delta;
+        }
+        //  (velocity + motion.Normalized() * Acceleration * delta).Clamped(MaxVelocity * delta);
+        KinematicCollision2D result = MoveAndCollide(velocity * delta);
+        if (IsInstanceValid(result)){
+            velocity -= result.Remainder;
+            // MoveAndCollide(result.Normal.Slide(motion));
+        }
     }
 
     public override void _UnhandledInput(InputEvent @event){
