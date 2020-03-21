@@ -71,22 +71,31 @@ public class Player : Entity{
     public override void _PhysicsProcess(float delta){
         base._PhysicsProcess(delta);
         if (state == EPlayerState.STATE_DYING || state == EPlayerState.STATE_STUNNED || state == EPlayerState.STATE_DODGING) return;
-        SlowDown(delta);
+
         Vector2 motion = new Vector2(
             Input.GetActionStrength("move_right") - Input.GetActionStrength("move_left"),
             Input.GetActionStrength("move_down") - Input.GetActionStrength("move_up")
         );
-        if (motion.Length() == 0){
-            
-        } else{
-            velocity = velocity + motion.Normalized() * Acceleration * delta;
-        }
-        //  (velocity + motion.Normalized() * Acceleration * delta).Clamped(MaxVelocity * delta);
+        SlowDown(motion, delta);
+        if (motion.Length() > 0)
+            velocity = (velocity + motion.Normalized() * Acceleration * delta).Clamped(MaxVelocity);
         KinematicCollision2D result = MoveAndCollide(velocity * delta);
         if (IsInstanceValid(result)){
-            velocity -= result.Remainder;
-            // MoveAndCollide(result.Normal.Slide(motion));
+            velocity = new Vector2(
+                Mathf.Abs(result.Normal.x) > 0? 0 : velocity.x,
+                Mathf.Abs(result.Normal.y) > 0? 0 : velocity.y
+            );
+            MoveAndCollide(result.Remainder);
         }
+    }
+
+    protected virtual void SlowDown(Vector2 motion, float delta){
+        velocity = velocity.LinearInterpolate(new Vector2(
+            (motion.x == 0? true : Mathf.Sign(motion.x) != Mathf.Sign(velocity.x))? 0 : velocity.x,
+            (motion.y == 0? true : Mathf.Sign(motion.y) != Mathf.Sign(velocity.y))? 0 : velocity.y
+            ), 5f * delta);
+        if (velocity.Length() < 1f && motion.Length() == 0)
+            velocity = new Vector2(0,0);
     }
 
     public override void _UnhandledInput(InputEvent @event){

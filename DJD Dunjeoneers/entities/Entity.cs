@@ -168,12 +168,6 @@ public abstract class Entity : KinematicBody2D{
         knockbackVelocity += knockback * (1 - knockbackResistance);
     }
 
-    protected virtual void SlowDown(float delta){
-        velocity = velocity.LinearInterpolate(new Vector2(0,0), delta);
-        if (velocity.DistanceTo(new Vector2(0,0)) < 0.1f)
-            velocity = new Vector2(0,0);
-    }
-
     protected Vector2 RandomDirection(){
         return new Vector2((float)rng.NextDouble() * 2 - 1, (float)rng.NextDouble() * 2 - 1);
     }

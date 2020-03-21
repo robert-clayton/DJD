@@ -2,19 +2,8 @@ using Godot;
 using System;
 
 public abstract class AbilityBase : Node2D{
-
-    private Vector2 _initialVelocity = new Vector2(10, 10);
-
     public Vector2 Velocity {get; set;} = new Vector2();
-    public Vector2 InitialVelocity {
-        get{
-            return _initialVelocity;
-        }
-        set{
-            _initialVelocity = value;
-            GD.Print(value);
-        }
-    }
+    public Vector2 InitialVelocity {get; set;} = new Vector2();
     public Vector2 Direction {get; set;} = new Vector2();
     public float LifetimePercent {
         get{
